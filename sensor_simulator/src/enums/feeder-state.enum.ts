@@ -1,0 +1,9 @@
+export enum FeederState {
+  IDLE = "IDLE",
+  STARTING = "STARTING",
+  RUNNING = "RUNNING",
+  DEGRADED = "DEGRADED",
+  PRE_FAILURE = "PRE_FAILURE",
+  FAILURE = "FAILURE",
+  TRIP = "TRIP"
+}
