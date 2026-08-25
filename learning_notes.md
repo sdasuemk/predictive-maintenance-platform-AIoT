@@ -96,6 +96,38 @@ Imagine you want to start a **local neighborhood newsletter** about cooking:
 
 ---
 
+## 3.2 MQTT vs. WebSockets (Socket.IO) for Web Dashboards
+
+A common architectural question is: **"If MQTT already uses WebSockets under the hood, why can't a React frontend connect directly to the MQTT broker? Why build an Express + Socket.IO bridge?"**
+
+In production Industry 4.0 platforms, we build a **Socket.IO gateway** on our backend API server instead of letting web browsers connect directly to the MQTT broker for three major reasons:
+
+### 1. The IT/OT Security Divide (The Gatekeeper Pattern)
+* **The OT Zone (Operational Technology):** The MQTT broker lives inside the plant's private, firewalled industrial network alongside the actual PLCs, SCADA gateways, and physical weight sensors. Exposing this broker directly to the public internet so that external browsers can connect is a **massive cybersecurity risk** (e.g., unauthorized users injecting malicious command topics).
+* **The IT Zone (Information Technology):** The Express backend server sits in a public-facing network zone (DMZ). It acts as a **secure gatekeeper**. It connects to the private MQTT broker on the inside and relays the filtered telemetry safely to the browser on the outside via **Socket.IO**.
+
+```
+[ PLCs / Sensors ]
+       │ (High-freq Modbus/OPC-UA)
+       ▼
+ [ Private MQTT Broker ] (Protected OT Zone)
+       │
+       ▼ (Inside Connection)
+ [ Express + Socket.IO Server ] (The Gatekeeper DMZ)
+       │
+       ▼ (Secure HTTPS/WSS Connection)
+ [ React Web Dashboard ] (Public IT Zone)
+```
+
+### 2. User Authentication & Access Control
+* **Express & Socket.IO:** Standard web security (JWT tokens, OAuth, HTTP session cookies) can be mapped directly to Socket.IO connections. We can instantly check if a user is authorized, has a valid login, or belongs to a specific plant group before sending data.
+* **MQTT Brokers:** Standard MQTT brokers (like Aedes) are optimized for low-overhead device telemetry, not complex user sessions. Mapping enterprise web authentication to raw MQTT topics is highly non-standard and difficult to manage.
+
+### 3. Payload Filtering and Optimization
+An industrial weigh feeder publishes raw sensor signals, calibration variables, and debugging packets. A web dashboard only needs a subset of these for visual meters. The Express bridge allows us to intercept high-frequency industrial topics, filter or format the JSON payloads, and emit lightweight objects tailored for web rendering, conserving browser memory and user bandwidth.
+
+---
+
 ## 4. MongoDB Time-Series & TTL
 
 To prevent the telemetry collection from consuming excessive disk space during continuous simulation, the repository configures a **TTL (Time-To-Live)** index:

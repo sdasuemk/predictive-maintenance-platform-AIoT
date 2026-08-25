@@ -5,18 +5,18 @@ Designed and developed an end-to-end intelligent predictive maintenance platform
 
 Key Features & Technical Highlights:
 
-• AIoT Data Acquisition & Simulation
+• AIoT Data Acquisition & Simulation (Node.js)
   - Built a Node.js-based industrial sensor simulator generating real-time telemetry data including vibration, temperature, current, voltage, load, and weight metrics.
   - Simulated operational patterns, anomaly conditions, and failure scenarios for heavy industrial equipment.
   - Implemented MQTT-based telemetry ingestion architecture to mimic real-world PLC/SCADA integrations.
 
-• Scalable Backend Platform
+• Scalable Backend Platform (Node.js)
   - Developed RESTful APIs using Node.js and Express.
   - Utilized MongoDB for time-series telemetry storage, equipment metadata management, maintenance history, and alert tracking.
   - Implemented WebSocket (Socket.IO) based real-time event streaming for live dashboard updates.
-  - Designed multi-plant and multi-equipment architecture supporting enterprise-scale fleet monitoring.
+  - Designed multi-plant and multi-equipment architecture supporting enterprise-scale fleet monitoring. (Future Plan)
 
-• Interactive Industrial Dashboard
+• Interactive Industrial Dashboard (Frontend)
   - Built a React.js dashboard with real-time visualization of equipment health, operational KPIs, utilization metrics, and alert management.
   - Developed fleet-level monitoring capabilities across multiple plants and production lines.
   - Created Digital Twin views displaying equipment health score, operational status, maintenance history, and remaining service life indicators.
