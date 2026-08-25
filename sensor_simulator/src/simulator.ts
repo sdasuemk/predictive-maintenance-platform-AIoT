@@ -8,12 +8,14 @@ import { FeederState } from "./enums/feeder-state.enum.js";
 import { SensorStatus } from "./enums/sensor-status.enum.js";
 import { COLORS } from "./utils/ansi-colors.js";
 import { startExpressServer } from "./server.js";
+import { SocketService } from "./services/socket.service.js";
 
 class SimulatorRunner {
   private embeddedMqtt: EmbeddedMqttService | null = null;
   private mqttService: MqttService;
   private telemetryRepository: TelemetryRepository;
   private feederService: FeederService;
+  private socketService: SocketService | null = null;
   private timer: NodeJS.Timeout | null = null;
   private isExiting = false;
 
@@ -52,7 +54,8 @@ class SimulatorRunner {
 
     // 4. Start HTTP Express Server API
     try {
-      startExpressServer(this.feederService);
+      const serverInstance = startExpressServer(this.feederService);
+      this.socketService = serverInstance.socketService;
     } catch (err: any) {
       console.error(`${COLORS.red}Failed to start Express API server: ${err.message}${COLORS.reset}`);
     }
@@ -79,6 +82,9 @@ class SimulatorRunner {
     // Publish data
     this.mqttService.publishTelemetry(telemetry);
     this.telemetryRepository.save(telemetry);
+    if (this.socketService) {
+      this.socketService.broadcastTelemetry(telemetry);
+    }
 
     // Draw Dashboard
     this.renderDashboard(telemetry);
