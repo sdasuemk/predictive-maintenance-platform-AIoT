@@ -7,13 +7,13 @@ export const TelemetryChart: React.FC = () => {
 
   const maxPoints = 30;
   const chartWidth = 600;
-  const chartHeight = 200;
+  const chartHeight = 120;
   
   // Padding dimensions
   const padLeft = 45;
   const padRight = 15;
-  const padTop = 15;
-  const padBottom = 25;
+  const padTop = 10;
+  const padBottom = 20;
 
   const graphWidth = chartWidth - padLeft - padRight;
   const graphHeight = chartHeight - padTop - padBottom;
@@ -79,7 +79,7 @@ export const TelemetryChart: React.FC = () => {
       </h2>
 
       {/* SVG Plot Canvas */}
-      <div style={{ width: "100%", background: "rgba(6, 9, 19, 0.4)", borderRadius: "8px", border: "1px solid var(--border-color)", padding: "10px", minHeight: "220px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ width: "100%", background: "rgba(6, 9, 19, 0.4)", borderRadius: "8px", border: "1px solid var(--border-color)", padding: "8px", minHeight: "130px", display: "flex", alignItems: "center", justifyContent: "center" }}>
         {data.length < 2 ? (
           <p style={{ color: "var(--text-muted)", fontSize: "13px", fontFamily: "var(--font-mono)" }}>
             Accumulating telemetry trend signals (Waiting for ticks: {data.length}/2)...

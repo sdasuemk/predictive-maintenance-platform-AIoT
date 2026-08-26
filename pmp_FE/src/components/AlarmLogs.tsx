@@ -81,21 +81,21 @@ export const AlarmLogs: React.FC = () => {
   }, [logs]);
 
   return (
-    <div className="card-panel" style={{ display: "flex", flexDirection: "column", gap: "20px", height: "100%" }}>
+    <div className="card-panel" style={{ display: "flex", flexDirection: "column", gap: "10px", height: "100%" }}>
       
       {/* Active alarms Section */}
       <div>
-        <h2 className="card-title">
-          <BellRing size={18} color="var(--color-crit)" /> Active Controller Alarms
+        <h2 className="card-title" style={{ marginBottom: "6px" }}>
+          <BellRing size={14} color="var(--color-crit)" /> Active Alarms
         </h2>
         
         {alarms.length === 0 ? (
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "12px", background: "rgba(16, 185, 129, 0.05)", border: "1px solid rgba(16, 185, 129, 0.2)", borderRadius: "6px", color: "var(--color-ok)", fontSize: "13px" }}>
-            <Info size={16} />
-            <span>No active system warnings or critical thresholds breached.</span>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "6px 8px", background: "rgba(16, 185, 129, 0.05)", border: "1px solid rgba(16, 185, 129, 0.15)", borderRadius: "4px", color: "var(--color-ok)", fontSize: "11px" }}>
+            <Info size={13} style={{ flexShrink: 0 }} />
+            <span>No warnings or critical alarms active.</span>
           </div>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxHeight: "180px", overflowY: "auto", paddingRight: "4px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px", maxHeight: "100px", overflowY: "auto", paddingRight: "2px" }}>
             {alarms.map((alert, idx) => {
               const isCrit = alert.severity === "CRITICAL";
               return (
@@ -104,28 +104,28 @@ export const AlarmLogs: React.FC = () => {
                   style={{ 
                     display: "flex", 
                     alignItems: "flex-start", 
-                    gap: "10px", 
-                    padding: "10px 12px", 
-                    background: isCrit ? "rgba(248, 113, 113, 0.08)" : "rgba(251, 191, 36, 0.08)", 
-                    border: `1px solid ${isCrit ? "rgba(248, 113, 113, 0.3)" : "rgba(251, 191, 36, 0.3)"}`, 
-                    borderRadius: "6px",
-                    fontSize: "12.5px"
+                    gap: "6px", 
+                    padding: "6px 8px", 
+                    background: isCrit ? "rgba(248, 113, 113, 0.08)" : "rgba(251, 191, 36, 0.06)", 
+                    border: `1px solid ${isCrit ? "rgba(248, 113, 113, 0.2)" : "rgba(251, 191, 36, 0.2)"}`, 
+                    borderRadius: "4px",
+                    fontSize: "11px"
                   }}
                 >
                   <AlertTriangle 
-                    size={16} 
+                    size={13} 
                     color={isCrit ? "var(--color-crit)" : "var(--color-warn)"} 
-                    style={{ flexShrink: 0, marginTop: "2px" }}
+                    style={{ flexShrink: 0, marginTop: "1px" }}
                     className="pulse-indicator"
                   />
                   <div style={{ flexGrow: 1 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 600 }}>
-                      <span style={{ color: isCrit ? "#f87171" : "#fbbf24" }}>{alert.code} ({alert.severity})</span>
-                      <span style={{ fontSize: "11px", color: "var(--text-secondary)", fontWeight: 400, fontFamily: "var(--font-mono)" }}>
+                      <span style={{ color: isCrit ? "#f87171" : "#fbbf24" }}>{alert.code}</span>
+                      <span style={{ fontSize: "9.5px", color: "var(--text-secondary)", fontWeight: 400, fontFamily: "var(--font-mono)" }}>
                         {new Date(alert.timestamp).toLocaleTimeString()}
                       </span>
                     </div>
-                    <div style={{ color: "var(--text-primary)", marginTop: "2px" }}>{alert.message}</div>
+                    <div style={{ color: "var(--text-primary)", marginTop: "1px" }}>{alert.message}</div>
                   </div>
                 </div>
               );
@@ -136,8 +136,8 @@ export const AlarmLogs: React.FC = () => {
 
       {/* Diagnostics terminal logs */}
       <div style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
-        <h2 className="card-title">
-          <Terminal size={18} color="var(--color-accent)" /> Diagnostic Logs Console
+        <h2 className="card-title" style={{ marginBottom: "6px" }}>
+          <Terminal size={14} color="var(--color-accent)" /> Logs Console
         </h2>
         
         <div 
@@ -145,30 +145,30 @@ export const AlarmLogs: React.FC = () => {
             flexGrow: 1, 
             background: "#030712", 
             border: "1px solid var(--border-color)", 
-            borderRadius: "8px", 
-            padding: "12px", 
+            borderRadius: "6px", 
+            padding: "8px", 
             fontFamily: "var(--font-mono)", 
-            fontSize: "11.5px", 
-            maxHeight: "260px",
-            minHeight: "180px",
+            fontSize: "10.5px", 
+            maxHeight: "120px",
+            minHeight: "90px",
             overflowY: "auto",
             display: "flex",
             flexDirection: "column",
-            gap: "6px",
+            gap: "4px",
             color: "#38bdf8"
           }}
         >
           {logs.length === 0 ? (
-            <div style={{ color: "var(--text-muted)", fontStyle: "italic" }}>Console initialized. Listening to telemetry streams...</div>
+            <div style={{ color: "var(--text-muted)", fontStyle: "italic" }}>Console listening to streams...</div>
           ) : (
             logs.map((log) => {
-              let logColor = "#94a3b8"; // default
+              let logColor = "#94a3b8";
               if (log.type === "crit") logColor = "#f87171";
               else if (log.type === "warn") logColor = "#fbbf24";
               else if (log.type === "info") logColor = "#34d399";
               
               return (
-                <div key={log.id} style={{ display: "flex", gap: "8px" }}>
+                <div key={log.id} style={{ display: "flex", gap: "6px" }}>
                   <span style={{ color: "var(--text-muted)", flexShrink: 0 }}>[{log.time}]</span>
                   <span style={{ color: logColor }}>{log.message}</span>
                 </div>

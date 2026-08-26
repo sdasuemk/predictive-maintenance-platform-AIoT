@@ -30,7 +30,7 @@ export const DigitalTwin: React.FC = () => {
       </h2>
 
       {/* SVG Canvas Container */}
-      <div style={{ flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "center", minHeight: "260px", background: "rgba(6, 9, 19, 0.4)", borderRadius: "8px", border: "1px solid var(--border-color)", padding: "10px", position: "relative" }}>
+      <div style={{ flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "center", minHeight: "170px", background: "rgba(6, 9, 19, 0.4)", borderRadius: "8px", border: "1px solid var(--border-color)", padding: "8px", position: "relative" }}>
         
         {/* State Banner */}
         <div style={{ position: "absolute", top: "10px", left: "10px", display: "flex", gap: "6px", flexWrap: "wrap" }}>
