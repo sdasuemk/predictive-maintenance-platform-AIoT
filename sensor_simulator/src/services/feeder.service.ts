@@ -126,7 +126,7 @@ export class FeederService {
     // The load cells report: Actual + Zero Drift
     const beltLoadReported = isRunning ? Math.max(0, beltLoadActual + zeroDrift) : 0;
 
-    // Speed target selection based on DISOCONT controller formula: Speed = Setpoint / (Load * 3.6)
+    // Speed target selection based on gravimetric controller formula: Speed = Setpoint / (Load * 3.6)
     let speedSetpoint = 0.0;
     if (isRunning) {
       if (beltLoadReported > 1.0) {

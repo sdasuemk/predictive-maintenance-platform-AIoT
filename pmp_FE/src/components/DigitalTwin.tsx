@@ -25,7 +25,7 @@ export const DigitalTwin: React.FC = () => {
           <ActivityIcon state={state} /> Digital Twin Asset Visualizer
         </span>
         <span style={{ fontSize: "11px", textTransform: "none", color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>
-          DISOCONT-Tersus Simulation Engine
+          Belt Feeder Controller Simulator
         </span>
       </h2>
 
@@ -37,6 +37,11 @@ export const DigitalTwin: React.FC = () => {
           <div style={{ fontSize: "11px", fontWeight: 600, padding: "2px 8px", borderRadius: "4px", background: isRunning ? "rgba(16, 185, 129, 0.1)" : "rgba(71, 85, 105, 0.1)", border: `1px solid ${isRunning ? "var(--color-ok)" : "var(--text-muted)"}`, color: isRunning ? "var(--color-ok)" : "var(--text-secondary)", textTransform: "uppercase" }}>
             {isRunning ? "BELT RUNNING" : "BELT IDLE"}
           </div>
+          {!activeFault && !isTripped && (
+            <div style={{ fontSize: "11px", fontWeight: 600, padding: "2px 8px", borderRadius: "4px", background: "rgba(16, 185, 129, 0.15)", border: "1px solid var(--color-ok)", color: "var(--color-ok)", boxShadow: "0 0 8px rgba(16, 185, 129, 0.2)" }}>
+              SYSTEM HEALTHY
+            </div>
+          )}
           {activeFault && (
             <div style={{ fontSize: "11px", fontWeight: 600, padding: "2px 8px", borderRadius: "4px", background: "rgba(239, 68, 68, 0.15)", border: "1px solid var(--color-crit)", color: "var(--color-crit)", animation: "pulse-glow 1.5s infinite" }}>
               ALERT: {activeFault}

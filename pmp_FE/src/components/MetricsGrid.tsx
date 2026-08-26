@@ -39,9 +39,9 @@ export const MetricsGrid: React.FC = () => {
   ];
 
   return (
-    <div className="card-panel" style={{ padding: "10px" }}>
-      <h2 className="card-title" style={{ marginBottom: "6px" }}>
-        <Activity size={14} color="var(--color-accent)" /> Telemetry Parameters
+    <div className="card-panel" style={{ padding: "6px 8px" }}>
+      <h2 className="card-title" style={{ marginBottom: "4px", fontSize: "11px", paddingBottom: "3px" }}>
+        <Activity size={12} color="var(--color-accent)" /> Telemetry Parameters
       </h2>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>

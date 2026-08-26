@@ -24,8 +24,8 @@ export const CONFIG = {
   FEEDER: {
     EQUIPMENT_ID: "WF-P1-001",
     PLANT_ID: "PLANT-001",
-    MODEL: "MULTIDOS-H",
-    CONTROLLER: "DISOCONT-Tersus",
+    MODEL: "BF-PROTOTYPE",
+    CONTROLLER: "AIOT-EDGE",
     MATERIAL: "Coal",
     LOCATION: "Transfer House-2, Bay-4",
     NOMINAL_FEED_RATE: 50.0, // t/h

@@ -94,7 +94,7 @@ class SimulatorRunner {
     process.stdout.write("\x1Bc");
 
     const header = `${COLORS.bold}${COLORS.cyan}========================================================================================
-  SCHENCK PROCESS MULTIDOS-H WEIGH FEEDER SIMULATOR - DISOCONT TERSUS CONTROLLER
+  AIOT GRAVIMETRIC WEIGH FEEDER SIMULATOR - EDGE CONTROL CONTROLLER
 ========================================================================================${COLORS.reset}`;
     console.log(header);
 
