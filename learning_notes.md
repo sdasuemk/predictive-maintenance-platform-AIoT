@@ -1,29 +1,41 @@
 # PMP AIoT Weigh Feeder Simulator: Learning Notes
 
-This document provides a comprehensive breakdown of the concepts, architecture, and physics equations implemented in the **Schenck Process MULTIDOS Weigh Feeder Simulator**.
+This document provides a comprehensive breakdown of the concepts, architecture, and physics equations implemented in the **AIoT Gravimetric Weigh Feeder Simulator**.
 
 ---
 
 ## 1. Directory Architecture (Production-Grade)
 
-The project is structured using a **Layered Architecture** pattern standard in enterprise backend environments (e.g., NestJS, Spring Boot). 
+The project is structured using a **Layered Architecture** pattern standard in enterprise backend and frontend environments. 
 
+### Backend Layout
 ```
-src/
-├── config/           # Centralized environment configuration
+sensor_simulator/src/
+├── config/           # Centralized environment configuration (generic settings)
 ├── enums/            # Pure state & status dictionaries
 ├── types/            # TypeScript contracts & payload interfaces
-├── models/           # Database document schema definitions
+├── models/           # Database document schema definitions (BSON)
 ├── repositories/     # Data Access Layer (queries & DB insertions)
-├── services/         # Core business engines (Physics, MQTT brokers, publishers)
+├── services/         # Core business engines (Physics, MQTT brokers, socket publishers)
 ├── controllers/      # HTTP request/response validation layer
 ├── routers/          # Pathway mapping
 ├── middlewares/      # Cross-cutting concerns (CORS, logs, errors)
 └── utils/            # Helper utilities (signals, injector, colors)
 ```
 
+### Frontend Layout
+```
+pmp_FE/src/
+├── components/       # Reusable UI widgets (Header, Controls, DigitalTwin, Metrics, Charts, Alarms)
+├── context/          # Socket.IO WebSocket context bridge
+├── types/            # TypeScript schemas and unions (no enum rule compliant)
+├── App.tsx           # Dashboard main orchestrator and responsive workspace
+├── index.css         # Styling system tokens, animations, and viewport rules
+└── main.tsx          # App bootstrap
+```
+
 ### Why this separation of concerns?
-* **Decoupling:** You can change your database from MongoDB to PostgreSQL by editing ONLY the `telemetry.repository.ts` file. The rest of the app doesn't know or care how database writes happen.
+* **Decoupling:** You can change your database from MongoDB to PostgreSQL by editing ONLY the repository files. The rest of the app doesn't know or care how database writes happen.
 * **Maintainability:** If you add a route, you write a `router` and a `controller`. The core physics service (`feeder.service.ts`) remains clean.
 * **Testability:** By passing dependencies into class constructors (Dependency Injection), you can easily mock services and test controllers in isolation.
 
@@ -35,9 +47,9 @@ TypeScript files are separated strictly by their data semantics:
 
 | Layer | Folder Location | What it represents | Example |
 |---|---|---|---|
-| **Enums** | `src/enums/` | Fixed sets of constant string options. | `FeederState` (`RUNNING`, `TRIP`) |
-| **Types** | `src/types/` | Data transfer interfaces (payloads in transition). | `TelemetryPayload` (JSON shape sent to API/MQTT) |
-| **Models** | `src/models/` | Database collection schemas. | `TelemetryDocument` (Data shape stored in MongoDB) |
+| **Enums** | `src/enums/` (Backend) | Fixed sets of constant string options. | `FeederState` (`RUNNING`, `TRIP`) |
+| **Types** | `src/types/` (Both) | Data transfer interfaces (payloads in transition). | `TelemetryPayload` (JSON shape sent to API/MQTT) |
+| **Models** | `src/models/` (Backend) | Database collection schemas. | `TelemetryDocument` (Data shape stored in MongoDB) |
 
 ### Key Detail: `TelemetryPayload` vs `TelemetryDocument`
 * In the API/MQTT stream, `timestamp` is a string (ISO-8601).
@@ -156,18 +168,65 @@ A background thread in MongoDB continuously monitors this index and automaticall
 
 ---
 
-## 5. Feeder Physics & Closed-Loop Control
+## 5. Frontend SCADA & Viewport Compaction
 
-The simulator models a real **Schenck Process MULTIDOS** closed-loop speed regulation.
+The frontend dashboard is designed as a single-viewport SCADA monitoring screen, optimizing visual space and preventing scrolling:
+
+### A. Single Viewport Height Constraints
+* **Body Lock**: Set `overflow: hidden` and `height: 100vh` on the HTML `body` and `#root` elements to disable outer browser page scrollbars.
+* **Grid Flex Layout**: Main container uses `display: flex; flex-direction: column` and sections use `flex: 1; min-height: 0; overflow: hidden;` to force components to fit inside the viewport height.
+* **Internal Scrolling**: Cards with variable length lists (like the console logging terminal and active alarms list) use `overflow-y: auto` to enable scrollbars *inside* their panels rather than expanding the outer page.
+
+### B. Column Grid Layout Reordering
+To balance component sizing and fit all telemetry metrics within a single screen width of `1024px` and above, the dashboard uses a three-column grid:
+`grid-template-columns: 290px 1fr 350px;`
+
+* **Left Column (290px)**: Control Console (Setpoint slider & fault injections) and the Logs Console (Real-time telemetry streams terminal). This keeps controllers and their logs adjacent.
+* **Middle Column (1fr - approx 876px)**: Conveyor Belt Digital Twin (top) and a side-by-side split row (bottom) containing the Diagnostic Guide (`250px` width) and the Telemetry Chart (`1fr` width).
+* **Right Column (350px)**: Telemetry Parameters Grid (14 variables list with status dots) and the Active Alarms list.
+
+---
+
+## 6. Technical UI Fixes & Features
+
+### A. Roller SVG Rotation Centering Fix
+Inline SVGs using CSS rotation animations often orbit around the top-left origin of the canvas `(0,0)` rather than rotating around their local center on major browsers.
+We resolved this by defining both `transform-origin` and `transform-box` inside [`index.css`](file:///c:/Coding/PMP_AIoT/pmp_FE/src/index.css):
+```css
+.belt-roller {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: rotate-roller 4s linear infinite;
+}
+```
+* **`transform-box: fill-box`** locks the coordinate workspace context to the object's local bounding box, forcing the pulley center to remain locked as the rotation pivot point.
+
+### B. Reverse Chronological Alarms Sorting
+Active alarms are sorted in reverse chronological order (newest on top) so that operator attention is immediately directed to the latest faults:
+```typescript
+{[...alarms].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).map(...)
+```
+This sorts the alarms list explicitly by timestamp in descending order before mapping to UI nodes.
+
+### C. System Healthy Indicator Signal
+A glowing green `SYSTEM HEALTHY` badge is added to the top-left of the Digital Twin visualizer canvas. It evaluates active state flags:
+`{!activeFault && !isTripped}`
+If no failure mode is active and the feeder has not tripped, it renders the system healthy badge, giving operators immediate confidence.
+
+---
+
+## 7. Feeder Physics & Closed-Loop Control
+
+The simulator models closed-loop speed regulation on a gravimetric weigh belt feeder:
 
 ```
-       Setpoint (e.g. 50 t/h)
+        Setpoint (e.g. 50 t/h)
                  │
                  ▼
-  [ DISOCONT Controller Logic ]
+     [ Controller Speed Logic ]
                  │
                  ▼ (Adjust speed target)
-  [ VFD Motor Speed Controller ] ◄── (Inertia Lag)
+    [ VFD Motor Speed Controller ] ◄── (Inertia Lag)
                  │
                  ▼
           Actual Speed (v)
@@ -192,13 +251,196 @@ The simulator models a real **Schenck Process MULTIDOS** closed-loop speed regul
 
 ---
 
-## 6. Progressive Anomaly Engine
+## 8. Progressive Anomaly Engine
 
-Industrial equipment failures are rarely instantaneous. They start as minor micro-anomalies that slowly degrade the machine over hours or days. 
-
-The `AnomalyInjector` models this using a **progression factor ($p$)** from $0.0$ ($0\%$) to $1.0$ ($100\%$):
+Industrial equipment failures start as minor micro-anomalies that slowly degrade the machine over hours or days. The `AnomalyInjector` models this using a **progression factor ($p$)** from $0.0$ ($0\%$) to $1.0$ ($100\%$):
 
 * **FM-01 (Load Cell Drift):** Simulates material building up on the weighbridge scales. It offsets the load readings by $p \times 3.5\text{ kg/m}$. This tricks the controller into slowing the belt down, which in turn drops the *actual* material feed rate below the target setpoint.
 * **FM-02 (Belt Slippage):** Tension drops ($tension \times (1 - 0.7p)$) causing speed to fall behind the drive pulley output. Drive motor current and temperature spike as the system fights the slip.
 * **FM-03 (Bearing Wear):** Drive end vibration climbs exponentially towards $7.5\text{ mm/s}$ (violating ISO-10816 standards) accompanied by temperature and current rises.
 * **FM-04 (Chute Blockage):** Extreme load spike, speed stalls to $0$, motor current maxes out, leading to an emergency system **`TRIP`** state.
+* **FM-05 (Mistracking):** Asymmetric belt loading leading to tail oscillation waves.
+
+---
+
+## 9. Today's Learning Concepts (Summary)
+
+During today's platform integration and visual tuning session, we explored and implemented five core web dashboard design and engineering patterns:
+
+### A. Viewport height confinement in SCADA terminals
+To eliminate browser scrollbars and lock layout structures within the view bounds (e.g. `730px` height):
+* We use `height: 100vh` and `overflow: hidden` on root containers.
+* Inside nested CSS grids, child elements must use `flex: 1` and `min-height: 0` alongside `overflow: hidden` to size themselves dynamically inside the viewport grid without pushing content down.
+* Internally growing elements (alarms, console terminal lists) must explicitly implement `overflow-y: auto` to establish internal container scroll context.
+
+### B. CSS SVG Rotation Origin Pivots (`transform-box: fill-box`)
+By default, web browsers calculate rotation parameters (`transform-origin: center`) in inline or external SVG files relative to the parent SVG canvas coordinate space origin `(0,0)`, causing circles to orbit.
+* Adding **`transform-box: fill-box`** binds the transform coordinate space to the object's local bounding box dimension limits rather than the root coordinate viewport, forcing SVG circles to rotate on their true local centers.
+
+### C. Active Alarm Timestamp Sorting
+While array reversals (`[...alarms].reverse()`) can rearrange streams, they depend on socket packet order consistency.
+* Direct array sorting using explicit UTC values (`.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())`) guarantees reverse chronological ordering (latest alert always pinned to the top of the operator list).
+
+### D. Multi-State Indicator Signal Intersections
+A glowing status badge requires intersection checks across multiple state flags.
+* Evaluating `{!activeFault && !isTripped}` ensures the **`SYSTEM HEALTHY`** banner displays only when no fault modes are active and the system has not entered an interlock safety trip state.
+
+### E. Trademark Names Generalization for Prototypes
+To keep a prototype product general:
+* We generalized all vendor-specific descriptors (`DISOCONT-Tersus`, `MULTIDOS-H`) to generic AIoT/Edge definitions (`AIOT-EDGE`, `BF-PROTOTYPE`) across configurations, console print banners, and UI labels.
+
+---
+
+## 10. Foundational Concepts: WebSockets, Socket.IO, & Digital Twins
+
+This section reviews the architectural theory behind real-time data streaming and asset visualizers.
+
+### A. WebSockets vs. HTTP (The Transport Highway)
+* **Standard HTTP (Request/Response)**: The browser initiates a request, the server responds, and the connection closes immediately. The server cannot push data to the browser unsolicited. In a real-time system, this requires resource-intensive HTTP polling.
+* **WebSockets (Persistent TCP Connection)**: A client initiates an HTTP handshake which upgrades the socket connection to a persistent, full-duplex TCP tunnel. Both client and server can push payloads back and forth at any time without connection overhead.
+
+### B. Socket.IO vs. Raw WebSockets (The Framework Layer)
+Socket.IO is not a separate protocol, but a JavaScript framework built on top of WebSockets that simplifies connection orchestration:
+* **Auto-Reconnection**: Reconnects automatically in the background if the network connection breaks.
+* **HTTP Long-Polling Fallback**: Automatically falls back to standard HTTP polling if firewalls block raw WebSocket packets.
+* **Event-Based API**: Supports namespaces and custom event topics (e.g. `socket.emit('control:setpoint', val)`) rather than managing raw text frames.
+* **Heartbeats**: Regularly pings connected clients to detect dead sockets and prevent memory leaks.
+
+### B1. Deep-Dive: Socket.IO Internals & Lifecycles
+
+To build production-grade real-time systems, we must understand the lower-level mechanics of Socket.IO:
+
+#### 1. Engine.IO vs. Socket.IO Architecture
+Socket.IO is divided into two distinct layers:
+* **Engine.IO**: The underlying engine responsible for establishing the physical connection, validating handshakes, handling CORS, managing timeouts, and upgrading the transport protocols.
+* **Socket.IO**: The user-facing API layer built on top of Engine.IO, providing features like custom events, binary packet multiplexing, client rooms, and multi-tenant namespaces.
+
+#### 2. The Handshake & Protocol Upgrade Lifecycle
+Unlike raw WebSockets which connect over TCP immediately, Socket.IO prioritizes connection success by starting with HTTP:
+1. **HTTP Handshake Request**: The client requests a handshake from the server:
+   `GET /socket.io/?EIO=4&transport=polling&t=Pj9g`
+   The server replies with a JSON handshake payload containing the connection ID (`sid`), the ping interval (e.g., 25000ms), and the ping timeout (e.g., 20000ms).
+2. **HTTP Long-Polling Session**: The connection starts immediately using HTTP POST/GET requests. This ensures the app works even behind restrictive firewalls that block standard WebSockets.
+3. **WebSocket Probe Check**: In the background, the client opens a parallel WebSocket connection to test if the network supports it:
+   `GET /socket.io/?EIO=4&transport=websocket&sid=<Session_ID>`
+4. **Transport Upgrade**: Once the WebSocket test succeeds, the client sends a "ping" packet over WebSockets. The server replies with a "pong", and Socket.IO immediately **discards** the old HTTP long-polling connection, switching 100% of data traffic to the high-performance WebSocket connection.
+
+#### 3. Heartbeat Mechanism (Ping/Pong)
+To prevent inactive socket connections from hanging in RAM forever (wasting server resources):
+* The server sends a `2` (ping) packet to the client at regular intervals (configured by `pingInterval`).
+* The client must respond immediately with a `3` (pong) packet.
+* If the server does not receive a pong packet within `pingTimeout` milliseconds, it closes the connection and emits a `disconnect` event, allowing the server to clean up client state variables and free memory.
+
+#### 4. Logical Segmentation: Namespaces and Rooms
+Socket.IO allows you to partition a single TCP connection into distinct channels:
+* **Namespaces (`io.of("/namespace")`)**: Separate endpoints sharing the same port but isolated from each other. Useful for dividing logic (e.g. a `/feeders` namespace for operators, and `/admin` for configuration changes).
+* **Rooms (`socket.join("room-name")`)**: Dynamic channels that sockets can join or leave on the server. The server can broadcast messages to a subset of users:
+  ```typescript
+  io.to("plant-001").emit("telemetry", data); // Sends only to clients in plant-001 room
+  ```
+
+#### 5. Cross-Origin Resource Sharing (CORS) Configuration
+WebSockets bypass standard browser CORS policies once established. However, the initial HTTP handshake *is* subject to CORS. Therefore, the server must explicitly configure allowed origins during initialization:
+```typescript
+const io = new Server(httpServer, {
+  cors: {
+    origin: "http://localhost:5173", // React dev server URL
+    methods: ["GET", "POST"]
+  }
+});
+```
+Without this, modern web browsers will block the initial handshake, preventing the connection.
+
+### B2. Cheat Sheet: Essential Socket.IO Code Snippets
+
+Use these quick snippets to remember standard socket syntax:
+
+#### 1. Server Setup & Initialization (Node.js)
+```javascript
+import { Server } from "socket.io";
+
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*", // allow all origins
+    methods: ["GET", "POST"]
+  }
+});
+```
+
+#### 2. Server Event Handling & Broadcasting
+```javascript
+io.on("connection", (socket) => {
+  console.log(`User connected: ${socket.id}`);
+
+  // A. Receive event from this specific client
+  socket.on("client:data", (payload) => {
+    console.log("Data received:", payload);
+  });
+
+  // B. Emit event BACK only to this specific client
+  socket.emit("server:ack", { success: true });
+
+  // C. Broadcast event to ALL clients EXCEPT the sender
+  socket.broadcast.emit("alert:global", { msg: "System warning" });
+
+  // D. Broadcast event to ALL connected clients
+  io.emit("telemetry:stream", { timestamp: Date.now() });
+
+  // E. Handle client disconnect
+  socket.on("disconnect", () => {
+    console.log(`User disconnected: ${socket.id}`);
+  });
+});
+```
+
+#### 3. Room Management (Server-Side)
+```javascript
+io.on("connection", (socket) => {
+  // Join a room channel
+  socket.join("conveyors");
+
+  // Leave a room channel
+  socket.leave("conveyors");
+
+  // Send message to ALL clients in "conveyors" room (including sender)
+  io.to("conveyors").emit("speed:update", 1.2);
+
+  // Send message to ALL clients in "conveyors" room EXCEPT the sender
+  socket.to("conveyors").emit("operator:joined", socket.id);
+});
+```
+
+#### 4. Client Setup & Event Listening (React/JS)
+```javascript
+import { io } from "socket.io-client";
+
+// Initialize socket connection
+const socket = io("http://localhost:3001", {
+  transports: ["websocket"] // force WebSocket protocol only
+});
+
+// A. Handle successful connection
+socket.on("connect", () => {
+  console.log(`Connected with ID: ${socket.id}`);
+});
+
+// B. Listen to server events
+socket.on("telemetry:stream", (data) => {
+  console.log("Telemetry received:", data);
+});
+
+// C. Emit event to server
+socket.emit("control:setpoint", { setpoint: 65 });
+
+// D. Clean up connection on unmount
+socket.disconnect();
+```
+
+### C. What is a "Digital Twin"?
+A **Digital Twin** is a virtual, software-based replica of a physical machine or industrial process that is continuously updated with real-time telemetry data to reflect its exact physical status:
+1. **The Physical Entity**: The physical equipment simulated by our Node.js physics backend engine.
+2. **The Real-Time Data Link**: The WebSocket connection piping telemetry variables from the equipment sensors.
+3. **The Virtual Entity**: The interactive SVG visualizer on the React dashboard that changes speed, load density, and warning alerts dynamically based on the socket feed.
+* **Value**: Enables remote operations monitoring, safe virtual "what-if" fault simulation, and predictive maintenance schedules based on telemetry deviations (fixing issues before breakdown occurs).
+
+
