@@ -25,7 +25,7 @@ export const ActiveAlarms: React.FC = () => {
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "4px", flex: 1, overflowY: "auto", paddingRight: "2px" }}>
-          {[...alarms].reverse().map((alert, idx) => {
+          {[...alarms].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).map((alert, idx) => {
             const isCrit = alert.severity === "CRITICAL";
             return (
               <div 
