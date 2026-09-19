@@ -2,7 +2,8 @@ import React, { createContext, useContext, useEffect, useState, useRef } from "r
 import { io, Socket } from "socket.io-client";
 import type { TelemetryPayload, Alert } from "../types/telemetry";
 
-const BACKEND_URL = "http://localhost:3001";
+const rawBackendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
+const BACKEND_URL = rawBackendUrl.startsWith("http") ? rawBackendUrl : `https://${rawBackendUrl}`;
 
 interface SocketContextType {
   isConnected: boolean;

@@ -3,7 +3,8 @@ import type { MLPrediction, CopilotMessage, RAGDocument, RAGSearchResult } from 
 import { computeMLPrediction } from "../utils/predictiveEngine";
 import { RAG_DOCUMENTS } from "../data/ragDocuments";
 
-const AI_BACKEND_URL = "http://localhost:8000";
+const rawAiUrl = import.meta.env.VITE_AI_BACKEND_URL || "http://localhost:8000";
+const AI_BACKEND_URL = rawAiUrl.startsWith("http") ? rawAiUrl : `https://${rawAiUrl}`;
 
 /**
  * Fetches real-time ML prognostics (RUL, Failure Probability, Degradation Stage)
