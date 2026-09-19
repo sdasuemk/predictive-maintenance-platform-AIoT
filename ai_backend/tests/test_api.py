@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from models.schemas import TelemetryInput, CopilotQueryRequest, RAGSearchRequest
+from models.schemas import TelemetryInput, CopilotQueryRequest
 from models.ml_prognostics import MLPrognosticsEngine
 from copilot.agent import AgenticMaintenanceCopilot
 from rag.knowledge_store import RAGKnowledgeStore

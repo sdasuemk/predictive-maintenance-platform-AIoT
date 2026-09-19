@@ -1,11 +1,9 @@
 import uuid
 from datetime import datetime
-from typing import Dict, Any, List, Optional
 from models.schemas import (
     CopilotQueryRequest, CopilotQueryResponse, ReasoningStep,
     Citation, CopilotActionButton
 )
-from models.ml_prognostics import MLPrognosticsEngine
 from rag.knowledge_store import RAGKnowledgeStore
 
 class AgenticMaintenanceCopilot:
@@ -32,7 +30,6 @@ class AgenticMaintenanceCopilot:
         drive_vib = get_val("vibration_drive", 1.2)
         motor_temp = get_val("motor_temp", 42.0)
         belt_speed = get_val("belt_speed", 0.61)
-        belt_load = get_val("belt_load", 23.5)
         belt_tension = get_val("belt_tension", 980.0)
 
         lower_query = query.lower()

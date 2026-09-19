@@ -1,26 +1,5 @@
 from typing import Dict, List, Optional, Any
-from pydantic import BaseModel, Field
-
-class SensorReadingInput(BaseModel):
-    value: float
-    unit: str = ""
-    status: str = "NORMAL"
-
-class TelemetrySensorsInput(BaseModel):
-    belt_load: Optional[SensorReadingInput] = None
-    belt_speed: Optional[SensorReadingInput] = None
-    feed_rate_actual: Optional[SensorReadingInput] = None
-    feed_rate_setpoint: Optional[SensorReadingInput] = None
-    feed_rate_deviation: Optional[SensorReadingInput] = None
-    totalizer: Optional[SensorReadingInput] = None
-    motor_current: Optional[SensorReadingInput] = None
-    motor_temp: Optional[SensorReadingInput] = None
-    belt_tension: Optional[SensorReadingInput] = None
-    vibration_drive: Optional[SensorReadingInput] = None
-    vibration_tail: Optional[SensorReadingInput] = None
-    zero_drift: Optional[SensorReadingInput] = None
-    moisture: Optional[SensorReadingInput] = None
-    ambient_temp: Optional[SensorReadingInput] = None
+from pydantic import BaseModel
 
 class TelemetryAlertInput(BaseModel):
     code: str
@@ -95,7 +74,6 @@ class RAGDocumentSchema(BaseModel):
     summary: str = ""
     content: str = ""
     tags: List[str] = []
-    equipmentType: Optional[str] = None
     sections: List[RAGSection] = []
 
 class RAGSearchRequest(BaseModel):

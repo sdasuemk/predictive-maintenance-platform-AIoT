@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Dict, Any, Optional
+from typing import Optional
 from models.schemas import TelemetryInput, MLPredictionOutput
 
 class MLPrognosticsEngine:
@@ -39,8 +39,6 @@ class MLPrognosticsEngine:
 
         vib_drive = get_sensor_val("vibration_drive", 1.2)
         motor_temp = get_sensor_val("motor_temp", 42.0)
-        belt_speed = get_sensor_val("belt_speed", 0.6)
-        belt_load = get_sensor_val("belt_load", 24.0)
 
         # 2. Normalized Feature Anomaly Scores (ISO 10816-3 Zone A/B/C/D mapping)
         # Zone A (<1.8 mm/s: Good), Zone B (1.8-4.5: Usable), Zone C (4.5-7.1: Warning), Zone D (>7.1: Danger)
