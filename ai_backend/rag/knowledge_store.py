@@ -11,9 +11,9 @@ class RAGKnowledgeStore:
     DOCUMENTS: List[RAGDocumentSchema] = [
         RAGDocumentSchema(
             id="DOC-SCH-001",
-            title="Schenck Process MULTIDOS Weigh Feeder Technical Manual",
+            title="OEM Belt Weigh Feeder Technical Manual",
             category="OEM_MANUAL",
-            equipment="Schenck Process WF-01",
+            equipment="OEM WF-01",
             version="Rev 4.2",
             summary="Standard operating parameters, calibration tolerances, tare adjustment, and load-cell diagnostics.",
             tags=["OEM", "Calibration", "Load Cell", "FM-01", "Tolerance"],
@@ -32,28 +32,28 @@ class RAGKnowledgeStore:
             ]
         ),
         RAGDocumentSchema(
-            id="DOC-SKF-002",
-            title="Drive Pulley Bearing Inspection & Replacement SOP (SKF 22212 E)",
+            id="DOC-BRG-002",
+            title="Drive Pulley Bearing Inspection & Replacement SOP (SRB-22212)",
             category="SOP",
             equipment="Drive Pulley Assembly",
             version="v3.1",
             summary="Vibration thresholds (ISO 10816-3), lubrication intervals, and replacement procedures for spherical roller bearings.",
             tags=["Bearing", "Vibration", "ISO 10816", "FM-03", "Lubrication"],
-            content="SECTION 3.5: VIBRATION SEVERITY & BEARING SPALLING CRITERIA\n- ISO 10816-3 Class II: Zone A (Good) < 1.8 mm/s; Zone B (Acceptable) 1.8-2.8 mm/s; Zone C (Warning) 2.8-4.5 mm/s; Zone D (Critical) > 4.5 mm/s.\n- Required Lubricant: Shell Gadus S2 V220 2, 45g per regreasing interval every 1,500 operating hours.\n- Torque Specs: Pillow block bolts Grade 8.8: 175 Nm.",
+            content="SECTION 3.5: VIBRATION SEVERITY & BEARING SPALLING CRITERIA\n- ISO 10816-3 Class II: Zone A (Good) < 1.8 mm/s; Zone B (Acceptable) 1.8-2.8 mm/s; Zone C (Warning) 2.8-4.5 mm/s; Zone D (Critical) > 4.5 mm/s.\n- Required Lubricant: High-Pressure Bearing Grease EP-2, 45g per regreasing interval every 1,500 operating hours.\n- Torque Specs: Pillow block bolts Grade 8.8: 175 Nm.",
             sections=[
                 RAGSection(
                     title="Section 3.5: Vibration Severity Criteria (ISO 10816-3)",
                     content="Drive end pillow block vibration thresholds (RMS mm/s): Zone A (Nominal) < 1.8 mm/s; Zone B (Acceptable) 1.8 - 2.8 mm/s; Zone C (Warning / Early Spalling) 2.8 - 4.5 mm/s; Zone D (Critical Breakdown Risk) > 7.1 mm/s. When vibration exceeds 4.5 mm/s with high frequency harmonics, bearing failure is imminent within 48-96 operating hours.",
-                    keywords=["vibration", "bearing", "iso 10816", "spalling", "skf", "fm-03", "threshold"]
+                    keywords=["vibration", "bearing", "iso 10816", "spalling", "srb", "fm-03", "threshold"]
                 ),
                 RAGSection(
                     title="Section 5.2: Lubrication Specifications",
-                    content="Standard replenishment interval: every 1,500 operating hours using Shell Gadus S2 V220 2 lithium-hydroxystearate grease. Quantity: 45 grams per bearing housing. Over-greasing will cause thermal runaway and seal blowout.",
-                    keywords=["lubrication", "grease", "shell gadus", "replenishment", "bearing"]
+                    content="Standard replenishment interval: every 1,500 operating hours using High-Pressure Bearing Grease EP-2 lithium-hydroxystearate grease. Quantity: 45 grams per bearing housing. Over-greasing will cause thermal runaway and seal blowout.",
+                    keywords=["lubrication", "grease", "bearing grease", "replenishment", "bearing"]
                 ),
                 RAGSection(
                     title="Section 6.1: Bearing Replacement Procedure",
-                    content="Step 1: Lockout and tagout (LOTO) 415V drive motor. Step 2: Release belt take-up tension. Step 3: Extract pillow block housing using hydraulic puller. Step 4: Mount replacement SKF 22212 E/C3 spherical roller bearing. Step 5: Torque adapter sleeve locknut to 175 Nm.",
+                    content="Step 1: Lockout and tagout (LOTO) 415V drive motor. Step 2: Release belt take-up tension. Step 3: Extract pillow block housing using hydraulic puller. Step 4: Mount replacement SRB-22212 spherical roller bearing. Step 5: Torque adapter sleeve locknut to 175 Nm.",
                     keywords=["replacement", "procedure", "loto", "torque", "pillow block", "bearing"]
                 )
             ]
@@ -104,12 +104,12 @@ class RAGKnowledgeStore:
             equipment="Weigh Feeder WF-P1-001",
             version="2025-Q4",
             summary="Drive pulley bearing replacement, vibration degradation timeline, and seal failure investigation.",
-            tags=["Work Order", "History", "FM-03", "SKF 22212", "Spalling"],
-            content="ROOT CAUSE & RESOLUTION LOG (Completed: Oct 2025)\n- Failure Mode: FM-03 Drive Bearing Spalling. Vibration had climbed from 1.4 mm/s to 6.2 mm/s over 72 hours.\n- Ultrasonic testing confirmed micro-pitting on inner race due to contaminated grease seal.\n- Replaced bearing assembly with SKF 22212 E/C3, replaced labyrinth seals, replenished with 45g Shell Gadus. Downtime: 3.5 hours.",
+            tags=["Work Order", "History", "FM-03", "SRB-22212", "Spalling"],
+            content="ROOT CAUSE & RESOLUTION LOG (Completed: Oct 2025)\n- Failure Mode: FM-03 Drive Bearing Spalling. Vibration had climbed from 1.4 mm/s to 6.2 mm/s over 72 hours.\n- Ultrasonic testing confirmed micro-pitting on inner race due to contaminated grease seal.\n- Replaced bearing assembly with SRB-22212 spherical roller bearing, replaced labyrinth seals, replenished with 45g High-Pressure Bearing Grease EP-2. Downtime: 3.5 hours.",
             sections=[
                 RAGSection(
                     title="Root Cause & Resolution Log (Completed: Oct 2025)",
-                    content="Failure Mode: FM-03 Drive Bearing Spalling. Vibration had climbed from 1.4 mm/s to 6.2 mm/s over 72 hours. Ultrasonic testing confirmed micro-pitting on inner race due to contaminated grease seal. Replaced bearing assembly with SKF 22212 E/C3, replaced labyrinth seals, replenished with 45g Shell Gadus. Downtime: 3.5 hours.",
+                    content="Failure Mode: FM-03 Drive Bearing Spalling. Vibration had climbed from 1.4 mm/s to 6.2 mm/s over 72 hours. Ultrasonic testing confirmed micro-pitting on inner race due to contaminated grease seal. Replaced bearing assembly with SRB-22212 spherical roller bearing, replaced labyrinth seals, replenished with 45g High-Pressure Bearing Grease EP-2. Downtime: 3.5 hours.",
                     keywords=["work order", "wo-8912", "history", "bearing", "spalling", "vibration", "fm-03"]
                 )
             ]

@@ -56,7 +56,7 @@ function App() {
                     <BookOpen size={12} color="var(--color-accent)" /> Diagnostic Fault Guide & SOP
                   </span>
                   <span style={{ fontSize: "8.5px", color: "var(--color-accent)", fontFamily: "var(--font-mono)", fontWeight: 400 }}>
-                    Schenck SOP-42
+                    OEM SOP-42
                   </span>
                 </h4>
                 

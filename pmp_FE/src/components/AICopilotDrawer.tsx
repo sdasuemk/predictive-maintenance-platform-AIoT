@@ -113,7 +113,7 @@ export const AICopilotDrawer: React.FC<AICopilotDrawerProps> = ({ isOpen, onClos
         };
       } else if (fm === "FM-01") {
         return {
-          content: `### ⚠️ Root Cause Analysis: Gravimetric Tare Zero Drift (FM-01)\n\n- **Primary Symptom:** Zero point drift has exceeded calibration limits (current reading **${s?.zero_drift?.value ?? 0.18} kg/m**).\n- **Physical Cause:** Aggregate or dust buildup between the weighing idler and load-cell mounting brackets.\n- **Risk:** Feed rate deviation of ±${Math.abs(s?.feed_rate_deviation?.value ?? 0).toFixed(1)}% affecting downstream kiln chemistry.\n- **Correction:** Execute automatic zero calibration sequence or manual scrape-down per **Schenck Manual Section 4.2**.`,
+          content: `### ⚠️ Root Cause Analysis: Gravimetric Tare Zero Drift (FM-01)\n\n- **Primary Symptom:** Zero point drift has exceeded calibration limits (current reading **${s?.zero_drift?.value ?? 0.18} kg/m**).\n- **Physical Cause:** Aggregate or dust buildup between the weighing idler and load-cell mounting brackets.\n- **Risk:** Feed rate deviation of ±${Math.abs(s?.feed_rate_deviation?.value ?? 0).toFixed(1)}% affecting downstream kiln chemistry.\n- **Correction:** Execute automatic zero calibration sequence or manual scrape-down per **OEM Manual Section 4.2**.`,
           reasoningSteps: [
             {
               thought: "Analyze load cell telemetry and compare against zero drift baseline.",
@@ -125,7 +125,7 @@ export const AICopilotDrawer: React.FC<AICopilotDrawerProps> = ({ isOpen, onClos
           citations: [
             {
               docId: "DOC-SCH-001",
-              sourceTitle: "Schenck Process MULTIDOS Technical Manual",
+              sourceTitle: "OEM Belt Weigh Feeder Technical Manual",
               section: "Section 4.2: Load Cell & Weighing Platform",
               excerpt: "Drift exceeding 0.15 kg/m indicates physical material buildup. Re-zero after 3 belt revolutions.",
               relevance: 0.98
@@ -179,7 +179,7 @@ export const AICopilotDrawer: React.FC<AICopilotDrawerProps> = ({ isOpen, onClos
           content: `### ✅ System Health Check: Nominal Operation\n\n- **Status:** All primary parameters (vibration: **${driveVib.toFixed(2)} mm/s**, motor temp: **${motorTemp.toFixed(1)}°C**, tension: **${beltTension.toFixed(0)} N**) are within baseline specifications.\n- **Health Index:** **${health}%**.\n- **ML Prognosis:** No imminent failure modes predicted. Current estimated RUL is **${prediction.estimatedRulHours} operating hours**.\n- **Action:** Continue standard shift monitoring. Next scheduled routine lubrication is in 240 operating hours.`,
           reasoningSteps: [
             {
-              thought: "Checking all 14 sensor variables against ISO 10816 and Schenck nominal envelopes.",
+              thought: "Checking all 14 sensor variables against ISO 10816 and OEM nominal envelopes.",
               action: "evaluate_all_sensors",
               actionInput: "telemetry.sensors",
               observation: "All sensors operating inside Zone A (Good)."
@@ -193,7 +193,7 @@ export const AICopilotDrawer: React.FC<AICopilotDrawerProps> = ({ isOpen, onClos
       return {
         content: `### 📋 Generated Maintenance Work Order (Draft)\n\n\`\`\`text
 WORK ORDER #: WO-2026-8914
-EQUIPMENT: ${telemetry?.equipmentId ?? "WF-01"} (Schenck Process MULTIDOS)
+EQUIPMENT: ${telemetry?.equipmentId ?? "WF-01"} (OEM Weigh Feeder)
 PLANT: ${telemetry?.plantId ?? "Plant-01"} | LINE: Dosing Feed Line 1
 PRIORITY: ${prediction.failureProbability > 60 ? "HIGH / URGENT" : "MEDIUM"}
 ASSIGNED TO: Mechanical Maintenance Crew B
@@ -236,7 +236,7 @@ PARTS REQUISITION:
 
     if (lower.includes("sop") || lower.includes("bearing") || lower.includes("manual")) {
       return {
-        content: `### 🛠️ Standard Operating Procedure: Bearing Maintenance & Inspection\n\nAccording to **SKF SOP (DOC-SKF-002)** for the **Schenck Process WF-01** drive assembly:\n\n1. **Pre-Check:** Ensure VFD is locked out and zero energy verified.\n2. **Grease Replenishment:**\n   - Clean grease nipple thoroughly to prevent abrasive particulate ingress.\n   - Inject exactly **45g** of **Shell Gadus S2 V220 2** using a calibrated manual grease gun while rotating the shaft slowly by hand if possible.\n3. **Vibration Acceptance Test:**\n   - Run feeder at 1.0 m/s nominal speed.\n   - Drive end vibration must drop back into **ISO 10816 Zone A (< 1.8 mm/s)**.\n   - If vibration remains > 3.0 mm/s, inner race spalling has occurred and bearing unit must be replaced.\n4. **Bolt Torque:** Tighten pillow block bolts to **175 Nm** with calibrated torque wrench.`,
+        content: `### 🛠️ Standard Operating Procedure: Bearing Maintenance & Inspection\n\nAccording to **SKF SOP (DOC-SKF-002)** for the **OEM WF-01** drive assembly:\n\n1. **Pre-Check:** Ensure VFD is locked out and zero energy verified.\n2. **Grease Replenishment:**\n   - Clean grease nipple thoroughly to prevent abrasive particulate ingress.\n   - Inject exactly **45g** of **Shell Gadus S2 V220 2** using a calibrated manual grease gun while rotating the shaft slowly by hand if possible.\n3. **Vibration Acceptance Test:**\n   - Run feeder at 1.0 m/s nominal speed.\n   - Drive end vibration must drop back into **ISO 10816 Zone A (< 1.8 mm/s)**.\n   - If vibration remains > 3.0 mm/s, inner race spalling has occurred and bearing unit must be replaced.\n4. **Bolt Torque:** Tighten pillow block bolts to **175 Nm** with calibrated torque wrench.`,
         citations: [
           {
             docId: "DOC-SKF-002",

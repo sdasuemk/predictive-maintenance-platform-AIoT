@@ -290,7 +290,7 @@ export class FeederService {
       sensors,
       alerts: [...this.activeAlerts],
       metadata: {
-        manufacturer: "Schenck Process",
+        manufacturer: "OEM Process",
         model: CONFIG.FEEDER.MODEL,
         serialNo: "WF-2021-04712",
         installDate: "2021-06-10",

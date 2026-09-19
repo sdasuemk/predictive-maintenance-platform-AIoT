@@ -1,4 +1,4 @@
-# Schenck Process MULTIDOS Weigh Feeder Simulator (Node.js + TypeScript)
+# Weigh Feeder Simulator (Node.js + TypeScript)
 
 This is an Industry 4.0 telemetry simulator modeling a **MULTIDOS-H Belt Weigh Feeder** controlled by a **DISOCONT Tersus** gravimetric controller.
 

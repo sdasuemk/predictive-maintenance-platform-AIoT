@@ -137,7 +137,7 @@ class AgenticMaintenanceCopilot:
                 f"### 📋 CMMS Work Order Draft: #WO-{(hash(now_time) % 9000) + 1000}\n\n"
                 f"| Field | Specification |\n"
                 f"|---|---|\n"
-                f"| **Equipment Tag** | {context.get('equipmentId', 'WF-P1-001')} (Schenck MULTIDOS) |\n"
+                f"| **Equipment Tag** | {context.get('equipmentId', 'WF-P1-001')} (OEM Weigh Feeder) |\n"
                 f"| **Priority** | High (Degradation Phase 3) |\n"
                 f"| **Required Spares** | 1x SKF 22212 E/C3 Spherical Roller Bearing, 2x V-Ring Seal |\n"
                 f"| **Lubricant** | 45g Shell Gadus S2 V220 2 (Lithium Hydroxystearate) |\n"

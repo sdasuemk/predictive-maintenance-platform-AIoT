@@ -3,9 +3,9 @@ import type { RAGDocument } from "../types/ai";
 export const RAG_DOCUMENTS: RAGDocument[] = [
   {
     id: "DOC-SCH-001",
-    title: "Schenck Process MULTIDOS Weigh Feeder Technical Manual",
+    title: "OEM Belt Weigh Feeder Technical Manual",
     category: "OEM_MANUAL",
-    equipment: "Schenck Process WF-01",
+    equipment: "OEM WF-01",
     version: "Rev 4.2",
     summary: "Standard operating parameters, calibration tolerances, tare adjustment, and load-cell diagnostics.",
     tags: ["OEM", "Calibration", "Load Cell", "FM-01", "Tolerance"],
@@ -63,7 +63,7 @@ export const RAG_DOCUMENTS: RAGDocument[] = [
     id: "DOC-HIS-005",
     title: "Historical Maintenance Work Order Log #WO-8912",
     category: "HISTORICAL_LOG",
-    equipment: "Schenck Process WF-01",
+    equipment: "OEM WF-01",
     version: "Archived 2025-08-14",
     summary: "Resolution log for high drive end vibration and 54°C bearing temperature elevation.",
     tags: ["Work Order", "Case Study", "FM-03", "Resolution"],
