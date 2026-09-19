@@ -7,12 +7,12 @@ export const TelemetryChart: React.FC = () => {
 
   const maxPoints = 30;
   const chartWidth = 600;
-  const chartHeight = 120;
+  const chartHeight = 100;
   
   // Padding dimensions
-  const padLeft = 45;
-  const padRight = 15;
-  const padTop = 10;
+  const padLeft = 38;
+  const padRight = 12;
+  const padTop = 6;
   const padBottom = 20;
 
   const graphWidth = chartWidth - padLeft - padRight;
@@ -59,33 +59,33 @@ export const TelemetryChart: React.FC = () => {
   const gridLines = [25, 50, 75];
 
   return (
-    <div className="card-panel" style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-      <h2 className="card-title" style={{ justifyContent: "space-between", marginBottom: "10px" }}>
-        <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <LineChart size={18} color="var(--color-accent)" /> Process Feed Rate Performance Trend
+    <div className="card-panel" style={{ display: "flex", flexDirection: "column", gap: "4px", padding: "6px 10px", height: "100%", minHeight: 0 }}>
+      <h2 className="card-title" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px", fontSize: "10.5px", paddingBottom: "2px" }}>
+        <span style={{ display: "flex", alignItems: "center", gap: "5px", whiteSpace: "nowrap" }}>
+          <LineChart size={12} color="var(--color-accent)" /> Feed Rate Trend
         </span>
         
         {/* Legend */}
-        <div style={{ display: "flex", gap: "14px", fontSize: "11px", fontFamily: "var(--font-mono)", textTransform: "none" }}>
-          <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <span style={{ display: "inline-block", width: "12px", height: "3px", background: "var(--color-ok)", borderRadius: "2px" }} />
-            Actual Feed Rate
+        <div style={{ display: "flex", gap: "6px", fontSize: "9px", fontFamily: "var(--font-mono)", textTransform: "none", whiteSpace: "nowrap" }}>
+          <span style={{ display: "flex", alignItems: "center", gap: "3px" }}>
+            <span style={{ display: "inline-block", width: "8px", height: "3px", background: "var(--color-ok)", borderRadius: "2px" }} />
+            Actual
           </span>
-          <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <span style={{ display: "inline-block", width: "12px", height: "3px", background: "var(--color-accent)", strokeDasharray: "2 2", borderTop: "2px dashed var(--color-accent)" }} />
-            Setpoint Target
+          <span style={{ display: "flex", alignItems: "center", gap: "3px" }}>
+            <span style={{ display: "inline-block", width: "8px", height: "3px", background: "var(--color-accent)", strokeDasharray: "2 2", borderTop: "2px dashed var(--color-accent)" }} />
+            Setpoint
           </span>
         </div>
       </h2>
 
       {/* SVG Plot Canvas */}
-      <div style={{ width: "100%", background: "rgba(6, 9, 19, 0.4)", borderRadius: "8px", border: "1px solid var(--border-color)", padding: "8px", minHeight: "130px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ width: "100%", flex: 1, minHeight: 0, background: "rgba(6, 9, 19, 0.4)", borderRadius: "4px", border: "1px solid var(--border-color)", padding: "2px 6px", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
         {data.length < 2 ? (
-          <p style={{ color: "var(--text-muted)", fontSize: "13px", fontFamily: "var(--font-mono)" }}>
+          <p style={{ color: "var(--text-muted)", fontSize: "11px", fontFamily: "var(--font-mono)" }}>
             Accumulating telemetry trend signals (Waiting for ticks: {data.length}/2)...
           </p>
         ) : (
-          <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} width="100%" height="100%" style={{ overflow: "visible" }}>
+          <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} width="100%" height="100%">
             <defs>
               <filter id="glow-chart-green" x="-20%" y="-20%" width="140%" height="140%">
                 <feGaussianBlur stdDeviation="3" result="blur" />
@@ -150,9 +150,9 @@ export const TelemetryChart: React.FC = () => {
             />
 
             {/* Timeline X Labels */}
-            <text x={padLeft} y={chartHeight - 4} fill="var(--text-muted)" fontSize="9" fontFamily="var(--font-mono)">-60s ago</text>
-            <text x={padLeft + graphWidth / 2} y={chartHeight - 4} textAnchor="middle" fill="var(--text-muted)" fontSize="9" fontFamily="var(--font-mono)">-30s ago</text>
-            <text x={chartWidth - padRight} y={chartHeight - 4} textAnchor="end" fill="var(--text-muted)" fontSize="9" fontFamily="var(--font-mono)">Live</text>
+            <text x={padLeft} y={94} fill="var(--text-muted)" fontSize="8.5" fontFamily="var(--font-mono)">-60s ago</text>
+            <text x={padLeft + graphWidth / 2} y={94} textAnchor="middle" fill="var(--text-muted)" fontSize="8.5" fontFamily="var(--font-mono)">-30s ago</text>
+            <text x={chartWidth - padRight} y={94} textAnchor="end" fill="var(--text-muted)" fontSize="8.5" fontFamily="var(--font-mono)">Live</text>
           </svg>
         )}
       </div>

@@ -1,10 +1,28 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useSocket } from "../context/SocketContext";
-import { Cpu, Wifi, WifiOff } from "lucide-react";
+import { computeMLPrediction } from "../utils/predictiveEngine";
+import { fetchMLPrediction } from "../services/aiApi";
+import { Cpu, Wifi, WifiOff, Bot, Sparkles } from "lucide-react";
 import { FeederState } from "../types/telemetry";
+import type { MLPrediction } from "../types/ai";
 
-export const Header: React.FC = () => {
+interface HeaderProps {
+  onOpenCopilot?: () => void;
+}
+
+export const Header: React.FC<HeaderProps> = ({ onOpenCopilot }) => {
   const { telemetry, isConnected } = useSocket();
+  const [prediction, setPrediction] = useState<MLPrediction>(() => computeMLPrediction(telemetry));
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchMLPrediction(telemetry).then((pred) => {
+      if (isMounted) setPrediction(pred);
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [telemetry]);
 
   const health = telemetry?.healthScore ?? 100;
 
@@ -19,6 +37,8 @@ export const Header: React.FC = () => {
   if (state === FeederState.RUNNING) stateStyle = { color: "var(--color-ok)" };
   else if (state === FeederState.DEGRADED || state === FeederState.PRE_FAILURE) stateStyle = { color: "var(--color-warn)" };
   else if (state === FeederState.FAILURE || state === FeederState.TRIP) stateStyle = { color: "var(--color-crit)" };
+
+  const hasAnomaly = telemetry?.activeFailureMode || (telemetry?.alerts && telemetry.alerts.length > 0) || health < 75;
 
   return (
     <header className="card-panel" style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "6px", padding: "5px 12px", marginBottom: "0px" }}>
@@ -36,7 +56,7 @@ export const Header: React.FC = () => {
         </div>
       </div>
 
-      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "14px" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "12px" }}>
         {/* Connection status */}
         <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
           <span style={{ fontSize: "11px", color: "var(--text-secondary)" }}>Gateway:</span>
@@ -69,13 +89,19 @@ export const Header: React.FC = () => {
           </>
         )}
 
-        {/* Health Score Meter */}
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        {/* Est RUL and Health Score Meter */}
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+            <span style={{ fontSize: "9px", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.2px" }}>Est. RUL</span>
+            <span style={{ fontSize: "12px", fontWeight: 700, fontFamily: "var(--font-mono)", color: prediction.estimatedRulHours < 48 ? "var(--color-crit)" : prediction.estimatedRulHours < 150 ? "var(--color-warn)" : "var(--color-ok)" }}>
+              {prediction.estimatedRulHours}h
+            </span>
+          </div>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
             <span style={{ fontSize: "9px", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.2px" }}>Health</span>
             <span style={{ fontSize: "12px", fontWeight: 700, fontFamily: "var(--font-mono)", color: `var(--color-${healthColorClass})` }}>{health}%</span>
           </div>
-          <div style={{ width: "70px", height: "6px", background: "#1e293b", borderRadius: "3px", overflow: "hidden", border: "1px solid var(--border-color)", position: "relative" }}>
+          <div style={{ width: "65px", height: "6px", background: "#1e293b", borderRadius: "3px", overflow: "hidden", border: "1px solid var(--border-color)", position: "relative" }}>
             <div
               style={{
                 width: `${health}%`,
@@ -87,6 +113,39 @@ export const Header: React.FC = () => {
             />
           </div>
         </div>
+
+        {/* AI Copilot Summon Button */}
+        {onOpenCopilot && (
+          <button
+            onClick={onOpenCopilot}
+            style={{
+              background: hasAnomaly ? "linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(14, 165, 233, 0.25))" : "linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(16, 185, 129, 0.15))",
+              border: hasAnomaly ? "1px solid rgba(239, 68, 68, 0.6)" : "1px solid rgba(14, 165, 233, 0.4)",
+              color: "#fff",
+              padding: "4px 10px",
+              borderRadius: "4px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              fontSize: "11px",
+              fontWeight: 600,
+              boxShadow: hasAnomaly ? "0 0 10px rgba(239, 68, 68, 0.35)" : "none",
+              transition: "all 0.2s ease"
+            }}
+            title="Open AI Maintenance Copilot & RAG Manuals"
+          >
+            <Bot size={14} color={hasAnomaly ? "#fca5a5" : "#38bdf8"} className={hasAnomaly ? "pulse-indicator" : ""} />
+            <span>AI Copilot</span>
+            {hasAnomaly ? (
+              <span style={{ background: "#ef4444", color: "#fff", fontSize: "8.5px", padding: "1px 4px", borderRadius: "8px", fontWeight: 700 }}>
+                Alert
+              </span>
+            ) : (
+              <Sparkles size={11} color="#38bdf8" />
+            )}
+          </button>
+        )}
       </div>
     </header>
   );

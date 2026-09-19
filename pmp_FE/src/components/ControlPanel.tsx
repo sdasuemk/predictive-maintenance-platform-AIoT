@@ -19,14 +19,14 @@ export const ControlPanel: React.FC = () => {
   ];
 
   return (
-    <div className="card-panel" style={{ padding: "10px 12px" }}>
-      <h2 className="card-title" style={{ marginBottom: "8px" }}>
-        <Sliders size={14} color="#0ea5e9" /> Control Console
+    <div className="card-panel" style={{ padding: "8px 10px" }}>
+      <h2 className="card-title" style={{ marginBottom: "6px", fontSize: "11px", paddingBottom: "3px" }}>
+        <Sliders size={13} color="#0ea5e9" /> Control Console
       </h2>
 
       {/* Setpoint Slider */}
-      <div style={{ marginBottom: "12px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px", fontSize: "11px" }}>
+      <div style={{ marginBottom: "8px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "2px", fontSize: "10.5px" }}>
           <span style={{ color: "var(--text-secondary)", fontWeight: 500 }}>Target Feed Setpoint</span>
           <span style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--color-accent)" }}>
             {setpoint} t/h
@@ -40,23 +40,23 @@ export const ControlPanel: React.FC = () => {
           disabled={!isConnected || isHalted}
           onChange={(e) => changeSetpoint(parseInt(e.target.value, 10))}
           className="input-range"
-          style={{ margin: "2px 0" }}
+          style={{ margin: "2px 0", height: "4px" }}
         />
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "9px", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "8.5px", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
           <span>10 t/h</span>
           <span>50 t/h</span>
           <span>90 t/h</span>
         </div>
       </div>
 
-      {/* Fault Injection Panel */}
-      <div style={{ marginBottom: "10px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "6px", fontSize: "10.5px", color: "var(--text-secondary)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-          <AlertOctagon size={12} color="#f87171" /> Inject Diagnostics
+      {/* Fault Injection Panel (Single Column Vertical Stack) */}
+      <div style={{ marginBottom: "6px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "5px", marginBottom: "4px", fontSize: "10px", color: "var(--text-secondary)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.3px" }}>
+          <AlertOctagon size={11} color="#f87171" /> Inject Diagnostics
         </div>
         
         {/* Single Column Vertical Stack */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
           {faults.map((f) => {
             const isActive = activeFault === f.code;
             return (
@@ -66,16 +66,20 @@ export const ControlPanel: React.FC = () => {
                 disabled={!isConnected || isHalted}
                 onClick={() => injectFailure(f.code)}
                 style={{ 
-                  padding: "5px 8px", 
-                  fontSize: "11px", 
+                  padding: "4px 8px", 
+                  fontSize: "10px", 
                   justifyContent: "flex-start",
                   textAlign: "left",
                   width: "100%"
                 }}
               >
                 <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-                  <span style={{ fontWeight: 600, color: isActive ? "#ff8a8a" : "inherit" }}>{f.code}: {f.label}</span>
-                  <span style={{ fontSize: "9.5px", opacity: 0.7, fontWeight: 400, whiteSpace: "normal" }}>{f.desc}</span>
+                  <span style={{ fontWeight: 600, color: isActive ? "#ff8a8a" : "inherit" }}>
+                    {f.code}: {f.label}
+                  </span>
+                  <span style={{ fontSize: "8.5px", opacity: 0.75, fontWeight: 400 }}>
+                    {f.desc}
+                  </span>
                 </div>
               </button>
             );
@@ -84,14 +88,14 @@ export const ControlPanel: React.FC = () => {
       </div>
 
       {/* Reset & Restart Command */}
-      <div style={{ display: "flex", marginTop: "10px", borderTop: "1px solid var(--border-color)", paddingTop: "8px" }}>
+      <div style={{ display: "flex", marginTop: "6px", borderTop: "1px solid var(--border-color)", paddingTop: "6px" }}>
         <button
           className="btn-control btn-success"
           onClick={resetFeeder}
           disabled={!isConnected}
-          style={{ flex: 1, padding: "6px", fontWeight: 600, fontSize: "11px" }}
+          style={{ flex: 1, padding: "5px", fontWeight: 600, fontSize: "10.5px" }}
         >
-          <RotateCcw size={12} /> Reset & Clear Faults
+          <RotateCcw size={11} /> Reset & Clear Faults
         </button>
       </div>
     </div>

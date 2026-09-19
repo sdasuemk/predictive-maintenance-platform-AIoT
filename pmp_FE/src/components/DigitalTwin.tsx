@@ -19,8 +19,8 @@ export const DigitalTwin: React.FC = () => {
   const rotationDuration = speed > 0 ? `${Math.max(0.5, 3 / speed).toFixed(2)}s` : "0s";
 
   return (
-    <div className="card-panel" style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      <h2 className="card-title" style={{ justifyContent: "space-between" }}>
+    <div className="card-panel" style={{ height: "100%", display: "flex", flexDirection: "column", minHeight: 0, overflow: "hidden" }}>
+      <h2 className="card-title" style={{ justifyContent: "space-between", marginBottom: "6px" }}>
         <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <ActivityIcon state={state} /> Digital Twin Asset Visualizer
         </span>
@@ -30,32 +30,32 @@ export const DigitalTwin: React.FC = () => {
       </h2>
 
       {/* SVG Canvas Container */}
-      <div style={{ flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "center", minHeight: "170px", background: "rgba(6, 9, 19, 0.4)", borderRadius: "8px", border: "1px solid var(--border-color)", padding: "8px", position: "relative" }}>
+      <div style={{ flex: 1, minHeight: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(6, 9, 19, 0.4)", borderRadius: "8px", border: "1px solid var(--border-color)", padding: "6px", position: "relative", overflow: "hidden" }}>
         
         {/* State Banner */}
-        <div style={{ position: "absolute", top: "10px", left: "10px", display: "flex", gap: "6px", flexWrap: "wrap" }}>
-          <div style={{ fontSize: "11px", fontWeight: 600, padding: "2px 8px", borderRadius: "4px", background: isRunning ? "rgba(16, 185, 129, 0.1)" : "rgba(71, 85, 105, 0.1)", border: `1px solid ${isRunning ? "var(--color-ok)" : "var(--text-muted)"}`, color: isRunning ? "var(--color-ok)" : "var(--text-secondary)", textTransform: "uppercase" }}>
+        <div style={{ position: "absolute", top: "8px", left: "8px", display: "flex", gap: "6px", flexWrap: "wrap", zIndex: 2 }}>
+          <div style={{ fontSize: "10.5px", fontWeight: 600, padding: "2px 8px", borderRadius: "4px", background: isRunning ? "rgba(16, 185, 129, 0.1)" : "rgba(71, 85, 105, 0.1)", border: `1px solid ${isRunning ? "var(--color-ok)" : "var(--text-muted)"}`, color: isRunning ? "var(--color-ok)" : "var(--text-secondary)", textTransform: "uppercase" }}>
             {isRunning ? "BELT RUNNING" : "BELT IDLE"}
           </div>
           {!activeFault && !isTripped && (
-            <div style={{ fontSize: "11px", fontWeight: 600, padding: "2px 8px", borderRadius: "4px", background: "rgba(16, 185, 129, 0.15)", border: "1px solid var(--color-ok)", color: "var(--color-ok)", boxShadow: "0 0 8px rgba(16, 185, 129, 0.2)" }}>
+            <div style={{ fontSize: "10.5px", fontWeight: 600, padding: "2px 8px", borderRadius: "4px", background: "rgba(16, 185, 129, 0.15)", border: "1px solid var(--color-ok)", color: "var(--color-ok)", boxShadow: "0 0 8px rgba(16, 185, 129, 0.2)" }}>
               SYSTEM HEALTHY
             </div>
           )}
           {activeFault && (
-            <div style={{ fontSize: "11px", fontWeight: 600, padding: "2px 8px", borderRadius: "4px", background: "rgba(239, 68, 68, 0.15)", border: "1px solid var(--color-crit)", color: "var(--color-crit)", animation: "pulse-glow 1.5s infinite" }}>
+            <div style={{ fontSize: "10.5px", fontWeight: 600, padding: "2px 8px", borderRadius: "4px", background: "rgba(239, 68, 68, 0.15)", border: "1px solid var(--color-crit)", color: "var(--color-crit)", animation: "pulse-glow 1.5s infinite" }}>
               ALERT: {activeFault}
             </div>
           )}
         </div>
 
         {/* Dynamic Telemetry Quick Info */}
-        <div style={{ position: "absolute", bottom: "10px", right: "10px", display: "flex", gap: "10px", fontSize: "12px", fontFamily: "var(--font-mono)" }}>
+        <div style={{ position: "absolute", bottom: "8px", right: "8px", display: "flex", gap: "10px", fontSize: "11.5px", fontFamily: "var(--font-mono)", zIndex: 2 }}>
           <span style={{ color: "var(--text-secondary)" }}>Speed: <strong style={{ color: "#fff" }}>{speed.toFixed(2)} m/s</strong></span>
           <span style={{ color: "var(--text-secondary)" }}>Load: <strong style={{ color: "#fff" }}>{load.toFixed(1)} kg/m</strong></span>
         </div>
 
-        <svg viewBox="0 0 600 240" width="100%" height="100%" style={{ overflow: "visible" }}>
+        <svg viewBox="0 0 600 240" style={{ width: "100%", height: "100%", maxHeight: "100%", objectFit: "contain" }}>
           <defs>
             {/* Ambient Shadow glow filter */}
             <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%">

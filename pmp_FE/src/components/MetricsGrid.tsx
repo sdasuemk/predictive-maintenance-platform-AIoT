@@ -22,29 +22,29 @@ export const MetricsGrid: React.FC = () => {
   const s = telemetry.sensors;
 
   const allMetrics = [
-    { key: "feed_rate_actual", label: "Actual Feed Rate", reading: s.feed_rate_actual, icon: <Gauge size={13} /> },
-    { key: "feed_rate_setpoint", label: "Feed Setpoint", reading: s.feed_rate_setpoint, icon: <Compass size={13} /> },
-    { key: "feed_rate_deviation", label: "Rate Deviation", reading: s.feed_rate_deviation, icon: s.feed_rate_deviation.value >= 0 ? <TrendingUp size={13} /> : <TrendingDown size={13} /> },
-    { key: "belt_load", label: "Belt Load Cell", reading: s.belt_load, icon: <Scale size={13} /> },
-    { key: "belt_speed", label: "Belt Speed", reading: s.belt_speed, icon: <Gauge size={13} /> },
-    { key: "totalizer", label: "Totalizer Accumulator", reading: s.totalizer, icon: <Shield size={13} />, isTotalizer: true },
-    { key: "motor_current", label: "Motor Current", reading: s.motor_current, icon: <Zap size={13} /> },
-    { key: "motor_temp", label: "Motor Temp", reading: s.motor_temp, icon: <Thermometer size={13} /> },
-    { key: "belt_tension", label: "Belt Tension", reading: s.belt_tension, icon: <Scale size={13} /> },
-    { key: "vibration_drive", label: "Drive End Vib", reading: s.vibration_drive, icon: <Activity size={13} /> },
-    { key: "vibration_tail", label: "Tail End Vib", reading: s.vibration_tail, icon: <Activity size={13} /> },
-    { key: "zero_drift", label: "Zero-Point Drift", reading: s.zero_drift, icon: <Scale size={13} /> },
-    { key: "moisture", label: "Material Moisture", reading: s.moisture, icon: <Droplets size={13} /> },
-    { key: "ambient_temp", label: "Ambient Temp", reading: s.ambient_temp, icon: <Thermometer size={13} /> }
+    { key: "feed_rate_actual", label: "Feed Actual", reading: s.feed_rate_actual, icon: <Gauge size={11} /> },
+    { key: "feed_rate_setpoint", label: "Feed Setpt", reading: s.feed_rate_setpoint, icon: <Compass size={11} /> },
+    { key: "feed_rate_deviation", label: "Deviation", reading: s.feed_rate_deviation, icon: s.feed_rate_deviation.value >= 0 ? <TrendingUp size={11} /> : <TrendingDown size={11} /> },
+    { key: "belt_load", label: "Belt Load", reading: s.belt_load, icon: <Scale size={11} /> },
+    { key: "belt_speed", label: "Belt Speed", reading: s.belt_speed, icon: <Gauge size={11} /> },
+    { key: "totalizer", label: "Totalizer", reading: s.totalizer, icon: <Shield size={11} />, isTotalizer: true },
+    { key: "motor_current", label: "Motor Curr", reading: s.motor_current, icon: <Zap size={11} /> },
+    { key: "motor_temp", label: "Motor Temp", reading: s.motor_temp, icon: <Thermometer size={11} /> },
+    { key: "belt_tension", label: "Tension", reading: s.belt_tension, icon: <Scale size={11} /> },
+    { key: "vibration_drive", label: "Drive Vib", reading: s.vibration_drive, icon: <Activity size={11} /> },
+    { key: "vibration_tail", label: "Tail Vib", reading: s.vibration_tail, icon: <Activity size={11} /> },
+    { key: "zero_drift", label: "Zero Drift", reading: s.zero_drift, icon: <Scale size={11} /> },
+    { key: "moisture", label: "Moisture", reading: s.moisture, icon: <Droplets size={11} /> },
+    { key: "ambient_temp", label: "Ambient", reading: s.ambient_temp, icon: <Thermometer size={11} /> }
   ];
 
   return (
-    <div className="card-panel" style={{ padding: "6px 8px" }}>
-      <h2 className="card-title" style={{ marginBottom: "4px", fontSize: "11px", paddingBottom: "3px" }}>
-        <Activity size={12} color="var(--color-accent)" /> Telemetry Parameters
+    <div className="card-panel" style={{ padding: "5px 8px" }}>
+      <h2 className="card-title" style={{ marginBottom: "4px", fontSize: "10.5px", paddingBottom: "2px" }}>
+        <Activity size={11} color="var(--color-accent)" /> Telemetry Parameters
       </h2>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2px 6px" }}>
         {allMetrics.map((m) => {
           const reading = m.reading as SensorReading;
           const isWarn = reading.status === SensorStatus.WARNING || reading.status === SensorStatus.HIGH || reading.status === SensorStatus.LOW;
@@ -69,42 +69,44 @@ export const MetricsGrid: React.FC = () => {
                 display: "flex", 
                 alignItems: "center", 
                 justifyContent: "space-between", 
-                padding: "3px 6px",
-                borderRadius: "4px",
-                background: isCrit ? "rgba(239, 68, 68, 0.05)" : isWarn ? "rgba(251, 191, 36, 0.03)" : "transparent",
-                borderBottom: "1px solid rgba(255,255,255,0.02)"
+                padding: "2px 4px",
+                borderRadius: "3px",
+                background: isCrit ? "rgba(239, 68, 68, 0.08)" : isWarn ? "rgba(251, 191, 36, 0.05)" : "rgba(255,255,255,0.015)",
+                border: `1px solid ${isCrit ? "rgba(239, 68, 68, 0.2)" : isWarn ? "rgba(251, 191, 36, 0.2)" : "rgba(255,255,255,0.03)"}`,
+                minWidth: 0
               }}
             >
               {/* Left: Icon + Name */}
-              <span style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "11px", color: "var(--text-secondary)" }}>
-                <span style={{ color: isCrit ? "var(--color-crit)" : isWarn ? "var(--color-warn)" : "var(--color-accent)", display: "flex" }}>
+              <span style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "9.5px", color: "var(--text-secondary)", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                <span style={{ color: isCrit ? "var(--color-crit)" : isWarn ? "var(--color-warn)" : "var(--color-accent)", display: "flex", flexShrink: 0 }}>
                   {m.icon}
                 </span>
-                {m.label}
+                <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{m.label}</span>
               </span>
 
-              {/* Right: Value + Status Dot */}
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              {/* Right: Value + Unit + Status Dot */}
+              <div style={{ display: "flex", alignItems: "center", gap: "3px", flexShrink: 0, marginLeft: "4px" }}>
                 <span style={{ 
-                  fontSize: "11.5px", 
+                  fontSize: "10px", 
                   fontWeight: 600, 
                   fontFamily: "var(--font-mono)",
                   color: isCrit ? "var(--color-crit)" : isWarn ? "var(--color-warn)" : "#fff"
                 }}>
                   {valStr}
                 </span>
-                <span style={{ fontSize: "9px", color: "var(--text-muted)", fontFamily: "var(--font-mono)", width: "30px" }}>
+                <span style={{ fontSize: "8px", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
                   {reading.unit}
                 </span>
                 {/* Status Dot */}
                 <span 
                   className={isCrit || isWarn ? "pulse-indicator" : ""}
                   style={{ 
-                    width: "6px", 
-                    height: "6px", 
+                    width: "5px", 
+                    height: "5px", 
                     borderRadius: "50%", 
                     background: statusColor,
-                    display: "inline-block"
+                    display: "inline-block",
+                    marginLeft: "2px"
                   }} 
                 />
               </div>

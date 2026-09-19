@@ -13,18 +13,25 @@ export const ActiveAlarms: React.FC = () => {
   const { alarms } = useSocket();
 
   return (
-    <div className="card-panel" style={{ display: "flex", flexDirection: "column", gap: "6px", flex: 1, minHeight: 0 }}>
-      <h2 className="card-title" style={{ marginBottom: "6px" }}>
-        <BellRing size={14} color="var(--color-crit)" /> Active Alarms
+    <div className="card-panel" style={{ display: "flex", flexDirection: "column", gap: "3px", padding: "6px 8px", height: "100%", minHeight: 0, flex: 1 }}>
+      <h2 className="card-title" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px", fontSize: "11px", paddingBottom: "3px" }}>
+        <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+          <BellRing size={12} color="var(--color-crit)" /> Active Alarms
+        </span>
+        {alarms.length > 0 && (
+          <span className="status-badge crit" style={{ fontSize: "9px", padding: "1px 6px" }}>
+            {alarms.length} Active
+          </span>
+        )}
       </h2>
       
       {alarms.length === 0 ? (
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "6px 8px", background: "rgba(16, 185, 129, 0.05)", border: "1px solid rgba(16, 185, 129, 0.15)", borderRadius: "4px", color: "var(--color-ok)", fontSize: "11px" }}>
-          <Info size={13} style={{ flexShrink: 0 }} />
-          <span>No warnings or critical alarms active.</span>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px", padding: "6px 8px", background: "rgba(16, 185, 129, 0.05)", border: "1px solid rgba(16, 185, 129, 0.15)", borderRadius: "4px", color: "var(--color-ok)", fontSize: "10px", flex: 1 }}>
+          <Info size={12} style={{ flexShrink: 0 }} />
+          <span>No active warnings or trips. System healthy.</span>
         </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: "4px", flex: 1, overflowY: "auto", paddingRight: "2px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "3px", flex: 1, minHeight: 0, overflowY: "auto", paddingRight: "2px" }}>
           {[...alarms].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).map((alert, idx) => {
             const isCrit = alert.severity === "CRITICAL";
             return (
@@ -33,28 +40,30 @@ export const ActiveAlarms: React.FC = () => {
                 style={{ 
                   display: "flex", 
                   alignItems: "flex-start", 
-                  gap: "6px", 
-                  padding: "6px 8px", 
+                  gap: "5px", 
+                  padding: "3px 6px", 
                   background: isCrit ? "rgba(248, 113, 113, 0.08)" : "rgba(251, 191, 36, 0.06)", 
                   border: `1px solid ${isCrit ? "rgba(248, 113, 113, 0.2)" : "rgba(251, 191, 36, 0.2)"}`, 
-                  borderRadius: "4px",
-                  fontSize: "11px"
+                  borderRadius: "3px",
+                  fontSize: "9.5px"
                 }}
               >
                 <AlertTriangle 
-                  size={13} 
+                  size={12} 
                   color={isCrit ? "var(--color-crit)" : "var(--color-warn)"} 
                   style={{ flexShrink: 0, marginTop: "1px" }}
                   className="pulse-indicator"
                 />
-                <div style={{ flexGrow: 1 }}>
+                <div style={{ flexGrow: 1, minWidth: 0 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 600 }}>
-                    <span style={{ color: isCrit ? "#f87171" : "#fbbf24" }}>{alert.code}</span>
-                    <span style={{ fontSize: "9.5px", color: "var(--text-secondary)", fontWeight: 400, fontFamily: "var(--font-mono)" }}>
+                    <span style={{ color: isCrit ? "#f87171" : "#fbbf24", fontSize: "10px" }}>{alert.code}</span>
+                    <span style={{ fontSize: "9px", color: "var(--text-secondary)", fontWeight: 400, fontFamily: "var(--font-mono)" }}>
                       {new Date(alert.timestamp).toLocaleTimeString()}
                     </span>
                   </div>
-                  <div style={{ color: "var(--text-primary)", marginTop: "1px" }}>{alert.message}</div>
+                  <div style={{ color: "var(--text-primary)", marginTop: "1px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} title={alert.message}>
+                    {alert.message}
+                  </div>
                 </div>
               </div>
             );

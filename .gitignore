@@ -1,6 +1,6 @@
 # Node dependency directory
 node_modules/
-
+.venv/
 # Production build folder
 dist/
 
