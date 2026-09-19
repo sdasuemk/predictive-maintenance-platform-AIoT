@@ -72,6 +72,9 @@ If you prefer to configure each service manually in the Render dashboard:
 - **Health Check Path**: `/health`
 - **Environment Variables**:
   - `PYTHON_VERSION`: `3.11.0`
+  - `HUGGINGFACE_API_KEY`: `hf_...` (your Hugging Face User Access Token)
+  - `HUGGINGFACE_MODEL`: `meta-llama/Llama-3.3-70B-Instruct` (or `Qwen/Qwen2.5-72B-Instruct`)
+  - `HUGGINGFACE_BASE_URL`: `https://router.huggingface.co/v1`
 
 ### 3. Frontend Dashboard (`pmp-frontend`)
 - **New +** > **Static Site**

@@ -42,6 +42,12 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
+      - key: HUGGINGFACE_API_KEY
+        sync: false # Enter your Hugging Face token in the Render dashboard
+      - key: HUGGINGFACE_MODEL
+        value: meta-llama/Llama-3.3-70B-Instruct
+      - key: HUGGINGFACE_BASE_URL
+        value: https://router.huggingface.co/v1
 
   # ============================================================================
   # 3. Industrial Digital Twin Dashboard (React SPA Static Site)

@@ -1,6 +1,9 @@
 import os
 import json
 from typing import Any, List, Optional, Sequence
+from dotenv import load_dotenv
+
+load_dotenv()
 from langchain_core.messages import BaseMessage, AIMessage, ToolCall
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.outputs import ChatResult, ChatGeneration
@@ -87,12 +90,28 @@ class OfflineDeterministicChatModel(BaseChatModel):
 def get_chat_model():
     """
     Dynamically loads the appropriate LLM provider:
-    1. OpenAI (if OPENAI_API_KEY is configured)
-    2. Anthropic (if ANTHROPIC_API_KEY is configured)
-    3. Google GenAI (if GEMINI_API_KEY or GOOGLE_API_KEY is configured)
+    1. Hugging Face (if HUGGINGFACE_API_KEY or HF_TOKEN is configured)
+    2. OpenAI (if OPENAI_API_KEY is configured)
+    3. Anthropic (if ANTHROPIC_API_KEY is configured)
     4. Local Ollama (if OLLAMA_BASE_URL is configured)
     5. OfflineDeterministicChatModel (air-gapped / zero-key fallback)
     """
+    hf_key = os.getenv("HUGGINGFACE_API_KEY") or os.getenv("HF_TOKEN")
+    if hf_key and not hf_key.startswith("your_"):
+        try:
+            from langchain_openai import ChatOpenAI
+            model_name = os.getenv("HUGGINGFACE_MODEL", "meta-llama/Llama-3.3-70B-Instruct")
+            base_url = os.getenv("HUGGINGFACE_BASE_URL", "https://router.huggingface.co/v1")
+            print(f"[LLM Factory] Initialized Cloud LLM: Hugging Face ({model_name}) via {base_url}")
+            return ChatOpenAI(
+                model=model_name,
+                api_key=hf_key,
+                base_url=base_url,
+                temperature=0.1
+            )
+        except Exception as e:
+            print(f"[LLM Factory] Failed to load Hugging Face Chat Model: {e}. Falling back...")
+
     openai_key = os.getenv("OPENAI_API_KEY")
     if openai_key and not openai_key.startswith("your_"):
         try:
