@@ -2,11 +2,21 @@ import React, { createContext, useContext, useEffect, useState, useRef } from "r
 import { io, Socket } from "socket.io-client";
 import type { TelemetryPayload, Alert } from "../types/telemetry";
 
-const rawBackendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
-const BACKEND_URL = rawBackendUrl.startsWith("http") ? rawBackendUrl : `https://${rawBackendUrl}`;
+export const getBackendUrl = (): string => {
+  const saved = typeof window !== "undefined" ? localStorage.getItem("pmp_backend_url") : null;
+  if (saved) return saved.trim();
+
+  const raw = (import.meta.env.VITE_BACKEND_URL || "http://localhost:3001").trim();
+  if (raw === "pmp-sensor-simulator" || raw === "https://pmp-sensor-simulator") {
+    return "https://pmp-sensor-simulator.onrender.com";
+  }
+  return raw.startsWith("http") ? raw : `https://${raw}`;
+};
 
 interface SocketContextType {
   isConnected: boolean;
+  backendUrl: string;
+  setCustomBackendUrl: (url: string) => void;
   telemetry: TelemetryPayload | null;
   history: TelemetryPayload[];
   alarms: Alert[];
@@ -18,22 +28,31 @@ interface SocketContextType {
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
 
 export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [backendUrl, setBackendUrlState] = useState<string>(getBackendUrl());
   const [isConnected, setIsConnected] = useState(false);
   const [telemetry, setTelemetry] = useState<TelemetryPayload | null>(null);
   const [history, setHistory] = useState<TelemetryPayload[]>([]);
   const [alarms, setAlarms] = useState<Alert[]>([]);
   const socketRef = useRef<Socket | null>(null);
 
+  const setCustomBackendUrl = (newUrl: string) => {
+    const formatted = newUrl.trim().startsWith("http") ? newUrl.trim() : `https://${newUrl.trim()}`;
+    localStorage.setItem("pmp_backend_url", formatted);
+    setBackendUrlState(formatted);
+  };
+
   useEffect(() => {
+    console.log("[SocketContext] Connecting to backend at:", backendUrl);
     // Connect to Socket.IO backend
-    const socket = io(BACKEND_URL, {
-      transports: ["websocket", "polling"]
+    const socket = io(backendUrl, {
+      transports: ["websocket", "polling"],
+      timeout: 10000,
     });
     socketRef.current = socket;
 
     socket.on("connect", () => {
       setIsConnected(true);
-      console.log("[SocketContext] Connected to websocket gateway.");
+      console.log("[SocketContext] Connected to websocket gateway at:", backendUrl);
     });
 
     socket.on("disconnect", () => {
@@ -70,7 +89,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return () => {
       socket.disconnect();
     };
-  }, []);
+  }, [backendUrl]);
 
   const changeSetpoint = (setpoint: number) => {
     if (socketRef.current) {
@@ -96,6 +115,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     <SocketContext.Provider
       value={{
         isConnected,
+        backendUrl,
+        setCustomBackendUrl,
         telemetry,
         history,
         alarms,

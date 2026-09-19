@@ -16,8 +16,8 @@ export function startExpressServer(feederService: FeederService): ServerInstance
   const httpServer = createServer(app);
   const socketService = new SocketService(httpServer, feederService);
 
-  httpServer.listen(CONFIG.PORT, () => {
-    console.log(`[Express Server] HTTP REST API listening at http://localhost:${CONFIG.PORT}`);
+  httpServer.listen(CONFIG.PORT, "0.0.0.0", () => {
+    console.log(`[Express Server] HTTP REST API listening on http://0.0.0.0:${CONFIG.PORT}`);
     console.log(`[Socket.IO Server] WebSocket server listening on same port.`);
   });
 

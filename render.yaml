@@ -9,11 +9,12 @@ services:
     rootDir: sensor_simulator
     buildCommand: npm install --include=dev && npm run build
     startCommand: npm start
+    healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
       - key: USE_EMBEDDED_MQTT
-        value: "true"
+        value: "false" # Set to "true" if running locally or using a dedicated broker
       - key: MQTT_BROKER_URL
         value: "mqtt://127.0.0.1:1883"
       - key: MQTT_CLIENT_ID
@@ -23,9 +24,9 @@ services:
       - key: TIME_ACCELERATION
         value: "10.0"
       - key: MONGO_ENABLED
-        value: "true"
+        value: "false" # Set to "true" in Render dashboard once you provide MONGO_URI
       - key: MONGO_URI
-        sync: false # Enter your MongoDB connection string in Render Dashboard or sync with Atlas
+        sync: false # Paste your MongoDB Atlas URI in Render dashboard Environment tab
 
   # ============================================================================
   # 2. AI ML Prognostics & Maintenance Copilot (Python FastAPI)
@@ -36,7 +37,7 @@ services:
     plan: free
     rootDir: ai_backend
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    startCommand: python -m uvicorn main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     envVars:
       - key: PYTHON_VERSION
@@ -57,12 +58,6 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_BACKEND_URL
-        fromService:
-          type: web
-          name: pmp-sensor-simulator
-          property: host
+        value: "https://pmp-sensor-simulator.onrender.com"
       - key: VITE_AI_BACKEND_URL
-        fromService:
-          type: web
-          name: pmp-ai-backend
-          property: host
+        value: "https://pmp-ai-backend.onrender.com"

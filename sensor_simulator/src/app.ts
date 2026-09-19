@@ -13,6 +13,11 @@ export function createApp(feederService: FeederService): express.Express {
   app.use(corsMiddleware);
   app.use(loggingMiddleware);
 
+  // Health check endpoint for Render
+  app.get("/health", (req, res) => {
+    res.status(200).json({ status: "ONLINE", service: "pmp-sensor-simulator" });
+  });
+
   // API Routes
   app.use("/api", createApiRouter(feederService));
 

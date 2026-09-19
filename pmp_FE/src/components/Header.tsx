@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useSocket } from "../context/SocketContext";
 import { computeMLPrediction } from "../utils/predictiveEngine";
 import { fetchMLPrediction } from "../services/aiApi";
-import { Cpu, Wifi, WifiOff, Bot, Sparkles } from "lucide-react";
+import { Cpu, Wifi, WifiOff, Bot, Sparkles, Settings } from "lucide-react";
 import { FeederState } from "../types/telemetry";
 import type { MLPrediction } from "../types/ai";
+import { ApiSettingsModal } from "./ApiSettingsModal";
 
 interface HeaderProps {
   onOpenCopilot?: () => void;
@@ -13,6 +14,7 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ onOpenCopilot }) => {
   const { telemetry, isConnected } = useSocket();
   const [prediction, setPrediction] = useState<MLPrediction>(() => computeMLPrediction(telemetry));
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -57,19 +59,36 @@ export const Header: React.FC<HeaderProps> = ({ onOpenCopilot }) => {
       </div>
 
       <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "12px" }}>
-        {/* Connection status */}
+        {/* Connection status & API Config button */}
         <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
           <span style={{ fontSize: "11px", color: "var(--text-secondary)" }}>Gateway:</span>
-          {isConnected ? (
-            <span className="status-badge ok" style={{ fontSize: "10px", padding: "1px 6px" }}>
-              <Wifi size={11} style={{ marginRight: "3px" }} /> Online
-            </span>
-          ) : (
-            <span className="status-badge crit" style={{ fontSize: "10px", padding: "1px 6px" }}>
-              <WifiOff size={11} style={{ marginRight: "3px" }} /> Offline
-            </span>
-          )}
+          <button
+            onClick={() => setIsSettingsOpen(true)}
+            title="Click to check or configure backend URLs"
+            style={{
+              background: "transparent",
+              border: "none",
+              cursor: "pointer",
+              padding: 0,
+              display: "flex",
+              alignItems: "center",
+              gap: "4px"
+            }}
+          >
+            {isConnected ? (
+              <span className="status-badge ok" style={{ fontSize: "10px", padding: "1px 6px" }}>
+                <Wifi size={11} style={{ marginRight: "3px" }} /> Online
+              </span>
+            ) : (
+              <span className="status-badge crit" style={{ fontSize: "10px", padding: "1px 6px" }}>
+                <WifiOff size={11} style={{ marginRight: "3px" }} /> Offline
+              </span>
+            )}
+            <Settings size={12} color="var(--text-secondary)" style={{ opacity: 0.7 }} />
+          </button>
         </div>
+
+        <ApiSettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
 
         {/* Equipment status info */}
         {telemetry && (

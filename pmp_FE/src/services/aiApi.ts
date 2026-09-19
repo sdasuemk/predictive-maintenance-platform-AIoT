@@ -3,8 +3,16 @@ import type { MLPrediction, CopilotMessage, RAGDocument, RAGSearchResult } from 
 import { computeMLPrediction } from "../utils/predictiveEngine";
 import { RAG_DOCUMENTS } from "../data/ragDocuments";
 
-const rawAiUrl = import.meta.env.VITE_AI_BACKEND_URL || "http://localhost:8000";
-const AI_BACKEND_URL = rawAiUrl.startsWith("http") ? rawAiUrl : `https://${rawAiUrl}`;
+export const getAiBackendUrl = (): string => {
+  const saved = typeof window !== "undefined" ? localStorage.getItem("pmp_ai_backend_url") : null;
+  if (saved) return saved.trim();
+
+  const raw = (import.meta.env.VITE_AI_BACKEND_URL || "http://localhost:8000").trim();
+  if (raw === "pmp-ai-backend" || raw === "https://pmp-ai-backend") {
+    return "https://pmp-ai-backend.onrender.com";
+  }
+  return raw.startsWith("http") ? raw : `https://${raw}`;
+};
 
 /**
  * Fetches real-time ML prognostics (RUL, Failure Probability, Degradation Stage)
@@ -15,8 +23,9 @@ export async function fetchMLPrediction(telemetry: TelemetryPayload | null): Pro
     return computeMLPrediction(null);
   }
 
+  const url = getAiBackendUrl();
   try {
-    const response = await fetch(`${AI_BACKEND_URL}/api/predict`, {
+    const response = await fetch(`${url}/api/predict`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(telemetry),
@@ -44,6 +53,7 @@ export async function queryAICopilot(
   telemetry: TelemetryPayload | null,
   activeFailureMode?: string | null
 ): Promise<CopilotMessage> {
+  const url = getAiBackendUrl();
   try {
     const payload = {
       query,
@@ -51,7 +61,7 @@ export async function queryAICopilot(
       activeFailureMode: activeFailureMode ?? telemetry?.activeFailureMode ?? null,
     };
 
-    const response = await fetch(`${AI_BACKEND_URL}/api/copilot/chat`, {
+    const response = await fetch(`${url}/api/copilot/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -70,7 +80,7 @@ export async function queryAICopilot(
       id: `msg-fallback-${Date.now()}`,
       role: "assistant",
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      content: `⚠️ **AI Backend Service Notice**: Could not reach Python FastAPI agent on \`${AI_BACKEND_URL}\`. Operating on local client fallback. Please ensure \`uvicorn main:app --port 8000\` is running in \`ai_backend\`.`,
+      content: `⚠️ **AI Backend Service Notice**: Could not reach Python FastAPI agent on \`${url}\`. Operating on local client fallback. (Note: Render free tier services sleep when inactive and may take ~50 seconds to wake up).`,
       actionButtons: [
         { label: "⚡ Retry RCA", actionKey: "rca" }
       ]
@@ -82,8 +92,9 @@ export async function queryAICopilot(
  * Retrieves all indexed OEM engineering manuals from the Python RAG knowledge store.
  */
 export async function fetchRAGDocuments(): Promise<RAGDocument[]> {
+  const url = getAiBackendUrl();
   try {
-    const response = await fetch(`${AI_BACKEND_URL}/api/rag/documents`);
+    const response = await fetch(`${url}/api/rag/documents`);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     return await response.json();
   } catch (err) {
@@ -95,21 +106,22 @@ export async function fetchRAGDocuments(): Promise<RAGDocument[]> {
 /**
  * Searches the Python RAG vector store using semantic similarity.
  */
-export async function searchRAGKnowledgeStore(
-  query: string,
-  category: string = "ALL"
-): Promise<RAGSearchResult[]> {
+export async function searchRAG(query: string, category?: string): Promise<RAGSearchResult[]> {
+  const url = getAiBackendUrl();
   try {
-    const response = await fetch(`${AI_BACKEND_URL}/api/rag/search`, {
+    const response = await fetch(`${url}/api/rag/search`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query, category, limit: 6 }),
+      body: JSON.stringify({ query, category, limit: 3 }),
     });
 
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
     return await response.json();
   } catch (err) {
-    console.warn("[aiApi] Backend RAG search failed, using local search:", err);
+    console.warn("[aiApi] Backend search failed, using client search fallback:", err);
     return [];
   }
 }

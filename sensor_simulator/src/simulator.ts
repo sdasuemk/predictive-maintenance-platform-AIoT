@@ -31,34 +31,35 @@ class SimulatorRunner {
     console.log("   AIoT Predictive Maintenance - Weigh Feeder Sim");
     console.log(`====================================================${COLORS.reset}\n`);
 
-    // 1. Initialize Embedded MQTT Broker if requested
-    if (CONFIG.MQTT.USE_EMBEDDED) {
-      this.embeddedMqtt = new EmbeddedMqttService(1883);
-      try {
-        await this.embeddedMqtt.start();
-      } catch (err: any) {
-        console.error(`${COLORS.red}Failed to start embedded MQTT Broker: ${err.message}${COLORS.reset}`);
-        console.log("Attempting connection to external broker instead...");
-      }
-    }
-
-    // 2. Connect MQTT Publisher Client
-    try {
-      await this.mqttService.connect();
-    } catch (err: any) {
-      console.warn(`${COLORS.yellow}MQTT publisher client failed to connect. Running offline.${COLORS.reset}`);
-    }
-
-    // 3. Connect MongoDB
-    await this.telemetryRepository.connect();
-
-    // 4. Start HTTP Express Server API
+    // 1. Start HTTP Express & Socket.IO Server API immediately for fast port detection on Render
     try {
       const serverInstance = startExpressServer(this.feederService);
       this.socketService = serverInstance.socketService;
     } catch (err: any) {
       console.error(`${COLORS.red}Failed to start Express API server: ${err.message}${COLORS.reset}`);
     }
+
+    // 2. Initialize Embedded MQTT Broker if requested
+    if (CONFIG.MQTT.USE_EMBEDDED) {
+      this.embeddedMqtt = new EmbeddedMqttService(1883);
+      try {
+        await this.embeddedMqtt.start();
+      } catch (err: any) {
+        console.warn(`${COLORS.yellow}Embedded MQTT Broker not started: ${err.message}. Running in HTTP/WebSocket mode.${COLORS.reset}`);
+      }
+    }
+
+    // 3. Connect MQTT Publisher Client
+    try {
+      await this.mqttService.connect();
+    } catch (err: any) {
+      console.warn(`${COLORS.yellow}MQTT publisher client failed to connect. Running offline.${COLORS.reset}`);
+    }
+
+    // 4. Connect MongoDB (non-blocking)
+    this.telemetryRepository.connect().catch((err: any) => {
+      console.warn(`[Telemetry Repository] Initial connect error: ${err.message}`);
+    });
 
     // 5. Start Weigh Feeder Simulation Engine
     this.feederService.start();
@@ -69,7 +70,11 @@ class SimulatorRunner {
     setTimeout(() => {
       // Begin execution loop
       this.timer = setInterval(() => this.tick(), CONFIG.FEEDER.TICK_INTERVAL_MS);
-      this.setupKeyboardInput();
+      if (process.stdin.isTTY) {
+        this.setupKeyboardInput();
+      } else {
+        console.log("[Simulator] Running in headless non-interactive mode.");
+      }
     }, 1500);
   }
 
