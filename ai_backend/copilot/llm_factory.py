@@ -106,7 +106,7 @@ def get_chat_model():
     anthropic_key = os.getenv("ANTHROPIC_API_KEY")
     if anthropic_key and not anthropic_key.startswith("your_"):
         try:
-            from langchain_anthropic import ChatAnthropic
+            from langchain_anthropic import ChatAnthropic  # type: ignore[import-not-found, import-untyped]
             print("[LLM Factory] Initialized Cloud LLM: Anthropic (claude-3-5-sonnet)")
             return ChatAnthropic(model="claude-3-5-sonnet-20241022", temperature=0.1, api_key=anthropic_key)
         except Exception as e:
@@ -115,7 +115,10 @@ def get_chat_model():
     ollama_url = os.getenv("OLLAMA_BASE_URL")
     if ollama_url:
         try:
-            from langchain_community.chat_models import ChatOllama
+            try:
+                from langchain_ollama import ChatOllama  # type: ignore[import-not-found, import-untyped]
+            except ImportError:
+                from langchain_community.chat_models import ChatOllama  # type: ignore[import-not-found, import-untyped]
             model_name = os.getenv("OLLAMA_MODEL", "llama3.1")
             print(f"[LLM Factory] Initialized On-Prem Local LLM: Ollama ({model_name}) at {ollama_url}")
             return ChatOllama(base_url=ollama_url, model=model_name, temperature=0.1)
