@@ -13,6 +13,13 @@ Thumbs.db
 *.log
 npm-debug.log*
 
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+
 # Git workspace temp files
 .agents/
 .gemini/
@@ -20,3 +27,4 @@ scratch/
 task.md
 walkthrough.md
 implementation_plan.md
+
