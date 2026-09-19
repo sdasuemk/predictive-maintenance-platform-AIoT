@@ -392,7 +392,7 @@ PARTS REQUISITION:
                 </span>
               </div>
               <p style={{ fontSize: "9.5px", color: "var(--text-secondary)", margin: 0, fontFamily: "var(--font-mono)" }}>
-                Python FastAPI :8000 • LangChain ReAct • RAG Vector DB • Equipment: {telemetry?.equipmentId ?? "WF-01"}
+                AI Microservice • LangChain ReAct • RAG Vector DB • Equipment: {telemetry?.equipmentId ?? "WF-01"}
               </p>
             </div>
           </div>

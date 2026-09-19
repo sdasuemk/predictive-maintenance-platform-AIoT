@@ -136,7 +136,13 @@ def llm_reasoner_node(state: MaintenanceAgentState) -> Dict[str, Any]:
     )
 
     full_history = [system_prompt] + messages
-    response = model_with_tools.invoke(full_history)
+    try:
+        response = model_with_tools.invoke(full_history)
+    except Exception as e:
+        print(f"[Graph Reasoner] Primary LLM failed ({e}). Falling back to Offline Deterministic Engine...")
+        from copilot.llm_factory import OfflineDeterministicChatModel
+        fallback_llm = OfflineDeterministicChatModel().bind_tools(COPILOT_TOOLS)
+        response = fallback_llm.invoke(full_history)
 
     traces = list(state.get("reasoning_traces", []))
     if hasattr(response, "tool_calls") and response.tool_calls:

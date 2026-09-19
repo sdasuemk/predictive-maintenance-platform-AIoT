@@ -76,9 +76,6 @@ export const PredictiveHealthCard: React.FC<PredictiveHealthCardProps> = ({ onOp
           <span style={{ fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.2px", textTransform: "uppercase", color: "#e2e8f0" }}>
             AI Predictive Health & RUL
           </span>
-          <span style={{ fontSize: "8px", color: "var(--color-accent)", background: "rgba(14, 165, 233, 0.15)", padding: "1px 4px", borderRadius: "2px", fontFamily: "var(--font-mono)" }}>
-            Python :8000
-          </span>
         </div>
         <span 
           style={{ 
