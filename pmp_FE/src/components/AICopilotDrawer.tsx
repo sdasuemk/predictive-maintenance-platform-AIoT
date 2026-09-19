@@ -8,6 +8,7 @@ import {
   Bot, X, Send, BookOpen, ChevronDown, ChevronRight, 
   ExternalLink, Sparkles, Search
 } from "lucide-react";
+import { MarkdownRenderer } from "./MarkdownRenderer";
 
 interface AICopilotDrawerProps {
   isOpen: boolean;
@@ -499,10 +500,8 @@ PARTS REQUISITION:
                       color: "#e2e8f0"
                     }}
                   >
-                    {/* Render Content with simple Markdown headings/bullet handling */}
-                    <div style={{ whiteSpace: "pre-wrap" }}>
-                      {m.content}
-                    </div>
+                    {/* Render Content with rich Markdown formatting & industrial tables */}
+                    <MarkdownRenderer content={m.content} />
 
                     {/* Collapsible Agentic Reasoning Trace (Thought -> Action -> Observation) */}
                     {m.reasoningSteps && m.reasoningSteps.length > 0 && (
@@ -816,9 +815,7 @@ PARTS REQUISITION:
                 </p>
 
                 <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: "8px", marginTop: "4px" }}>
-                  <pre style={{ fontSize: "10px", whiteSpace: "pre-wrap", color: "#cbd5e1", lineHeight: "1.4", fontFamily: "var(--font-mono)" }}>
-                    {activeDoc.content}
-                  </pre>
+                  <MarkdownRenderer content={activeDoc.content} />
                 </div>
 
                 <button
