@@ -14,10 +14,18 @@ services:
         value: production
       - key: USE_EMBEDDED_MQTT
         value: "true"
+      - key: MQTT_BROKER_URL
+        value: "mqtt://127.0.0.1:1883"
+      - key: MQTT_CLIENT_ID
+        value: "weigh_feeder_sim"
+      - key: TICK_INTERVAL_MS
+        value: "2000"
+      - key: TIME_ACCELERATION
+        value: "10.0"
       - key: MONGO_ENABLED
-        value: "false" # Set to "true" in Render dashboard if using MongoDB Atlas
+        value: "true"
       - key: MONGO_URI
-        sync: false # Set via Render dashboard Environment settings
+        sync: false # Enter your MongoDB connection string in Render Dashboard or sync with Atlas
 
   # ============================================================================
   # 2. AI ML Prognostics & Maintenance Copilot (Python FastAPI)

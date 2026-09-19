@@ -54,8 +54,13 @@ If you prefer to configure each service manually in the Render dashboard:
 - **Start Command**: `npm start`
 - **Environment Variables**:
   - `NODE_ENV`: `production`
-  - `USE_EMBEDDED_MQTT`: `true`
-  - `MONGO_ENABLED`: `false` (or `true` with `MONGO_URI`)
+  - `USE_EMBEDDED_MQTT`: `true` (uses in-process Aedes broker; set `false` if using an external broker)
+  - `MQTT_BROKER_URL`: `mqtt://127.0.0.1:1883`
+  - `MQTT_CLIENT_ID`: `weigh_feeder_sim`
+  - `TICK_INTERVAL_MS`: `2000` (telemetry tick interval in ms)
+  - `TIME_ACCELERATION`: `10.0` (speed multiplier for failure mode progression)
+  - `MONGO_ENABLED`: `true` (or `false` to run purely in memory without persistence)
+  - `MONGO_URI`: `mongodb+srv://...` (your MongoDB Atlas connection string)
 
 ### 2. AI Backend Microservice (`pmp-ai-backend`)
 - **New +** > **Web Service**
@@ -65,6 +70,8 @@ If you prefer to configure each service manually in the Render dashboard:
 - **Build Command**: `pip install -r requirements.txt`
 - **Start Command**: `uvicorn main:app --host 0.0.0.0 --port $PORT`
 - **Health Check Path**: `/health`
+- **Environment Variables**:
+  - `PYTHON_VERSION`: `3.11.0`
 
 ### 3. Frontend Dashboard (`pmp-frontend`)
 - **New +** > **Static Site**
