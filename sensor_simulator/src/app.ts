@@ -13,6 +13,20 @@ export function createApp(feederService: FeederService): express.Express {
   app.use(corsMiddleware);
   app.use(loggingMiddleware);
 
+  // Root status endpoint
+  app.get("/", (req, res) => {
+    res.status(200).json({
+      status: "ONLINE",
+      service: "AIoT Weigh Feeder Telemetry Simulator",
+      gateway: "Socket.IO WebSocket Gateway Active",
+      state: feederService.state,
+      endpoints: {
+        health: "/health",
+        telemetry: "/api/telemetry"
+      }
+    });
+  });
+
   // Health check endpoint for Render
   app.get("/health", (req, res) => {
     res.status(200).json({ status: "ONLINE", service: "pmp-sensor-simulator" });

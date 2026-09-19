@@ -27,13 +27,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+def root():
+    return {
+        "status": "ONLINE",
+        "service": "AIoT Predictive Maintenance AI Backend",
+        "docs": "/docs",
+        "endpoints": {
+            "health": "/health",
+            "predict": "/api/predict",
+            "copilot": "/api/copilot/chat",
+            "rag_documents": "/api/rag/documents",
+            "rag_search": "/api/rag/search"
+        }
+    }
+
 @app.get("/health")
 def health_check():
     return {
         "status": "ONLINE",
         "service": "AIoT ML Prognostics & Copilot Service",
-        "engine": "FastAPI + Scikit-Learn + LangChain ReAct",
-        "port": 8000
+        "engine": "FastAPI + Scikit-Learn + LangChain ReAct"
     }
 
 @app.post("/api/predict", response_model=MLPredictionOutput)
